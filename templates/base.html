@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>WorewolfGameBBS</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}" />
+    <script src="{% static 'jquery/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+</head>
+<body class="bg-secondary">
+    <!-- ナビバー -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-warning">
+        <a class="navbar-brand" href="{% url 'WGB:top' %}">WorewolfGameBBS</a>
+        <span>ようこそ&nbsp;
+        {% if user.is_authenticated %}
+            {{user.display_name}}
+        {% else %}
+            ゲスト
+        {% endif %}
+        &nbsp;さん</span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              {% if user.is_authenticated %}
+              <li>
+                <a class="nav-item nav-link" href="{% url 'WGB:logout' %}">ログアウト</a>
+              </li>
+              {% else %}
+              <li>
+                  <a class="nav-item nav-link" href="{% url 'WGB:show_login' %}">ログイン</a>
+              </li>
+              {% endif %}
+              <li class="nav-item">
+                  <a class="nav-item nav-link" href="{% url 'WGB:create_user' %}">ユーザー登録</a>
+              </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- メインコンテント -->
+    <div class="container mt-3">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

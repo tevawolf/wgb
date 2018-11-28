@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <div class="col-md-16">
+        <table class="table table-striped table-bordered table-hover table-condensed table-sm">
+            <thead class="thead-light">
+                <tr><th>No</th><th>タイトル</th><th>公開レベル</th><th>参加</th><th>作成者</th><th>作成日</th></tr>
+            </thead>
+            <tbody>
+                {% for thread in threads_list %}
+                <tr class="table-light">
+                    <th>{{thread.thread_no}}</th>
+                    {% if thread.open_level > 0 %}
+                    <th><a href="">{{thread.thread_title}}</a></th>
+                    {% else %}
+                        <th>{{thread.thread_title}}</th>
+                    {% endif %}
+                    <th>{{thread.display_open_level}}</th>
+                    <th>
+                    {% if thread.open_level < 2 %}
+                        <button type="button" class="btn btn-info">参加する</button>
+                    {% else %}
+                        -
+                    {% endif %}
+                    </th>
+                    <th>{{thread.display_create_user}}</th>
+                    <th>{{thread.create_date}}</th>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

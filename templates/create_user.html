@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <form action="{% url 'WGB:exe_create_user' %}" method="post">
+        {% csrf_token %}
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">ユーザー登録</div>
+                    <div class="card-subtitle"><span class="text-danger">{{ form.non_field_errors }}</span></div>
+                    <div class="card-text py-2">{{form.username.label}}</div>
+                    <div class="py-2">{{form.username}}{{form.username.errors}}</div>
+                    <div class="card-text py-2">{{form.password.label}}</div>
+                    <div class="py-2">{{form.password}}{{form.password.error}}</div>
+                    <div class="card-text py-2">{{form.password2.label}}</div>
+                    <div class="py-2">{{form.password2}}{{form.password2.error}}</div>
+                    <div class="card-text py-2">{{form.nickname.label}}</div>
+                    <div class="py-2">{{form.nickname}}{{form.nickname.error}}</div>
+                    <div class="card-text py-2">{{form.email.label}}</div>
+                    <div class="py-2">{{form.email}}{{form.email.error}}</div>
+                    <div class="card-text py-2">{{form.icon.label}}</div>
+                    <div class="py-2">{{form.icon}}{{form.icon.error}}</div>
+                    <button type="submit" class="btn btn-success btn-lg btn-block">ユーザ登録</button>
+                    <a href="{% url 'WGB:top' %}">キャンセル</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <form action="{% url 'WGB:login' %}" method="post">
+        {% csrf_token %}
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">ログイン</div>
+                    <div class="card-subtitle"><span class="text-danger">{{ form.non_field_errors }}</span></div>
+                    <div class="card-text py-2">{{form.username.label}}</div>
+                    <div class="py-2">{{form.username}}{{form.username.errors}}</div>
+                    <div class="card-text py-2">{{form.password.label}}</div>
+                    <div class="py-2">{{form.password}}{{form.password.error}}</div>
+                    <button type="submit" class="btn btn-success btn-lg btn-block">ログイン</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

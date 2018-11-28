@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
+from django.utils import timezone
+
+from datetime import datetime
 
 from config import settings
 
@@ -11,7 +14,7 @@ class UserAccount(AbstractUser):
         db_table = 'user_account'
 
     nickname = models.CharField(verbose_name='ニックネーム', max_length=100, null=False, blank=True)
-    icon = models.ImageField(verbose_name='アイコン画像パス', upload_to=settings.STATICFILES_DIRS[0] + '/uploads/icons/')
+    icon = models.ImageField(verbose_name='アイコン画像パス', upload_to='icons/')
 
     def display_name(self):
         if self.nickname:
@@ -26,9 +29,9 @@ class Threads(models.Model):
         verbose_name_plural = '1.掲示板スレッド'
         db_table = 'threads'
 
-    thread_no = models.IntegerField(verbose_name='掲示板No', primary_key=True)
+    thread_no = models.AutoField(verbose_name='掲示板No', primary_key=True)
     thread_title = models.CharField(verbose_name='掲示板タイトル', max_length=100, null=False, blank=False)
-    create_date = models.DateTimeField(verbose_name='作成日時')
+    create_date = models.DateTimeField(verbose_name='作成日時', default=timezone.now())
     OPEN_LEVEL = (
         (0, '非公開(パスワードがないと閲覧・書き込み不可)'),
         (1, '閲覧のみ(パスワードがないと書き込み不可)'),
@@ -60,7 +63,7 @@ class ThreadMember(models.Model):
 
     def __str__(self):
         return '掲示板No.{}【{}】:{}さん'.format(self.thread.thread_no, self.thread.thread_title,
-                                          self.member.first_name)
+                                          self.member.display_name())
 
 
 class ThreadWrite(models.Model):
@@ -69,11 +72,16 @@ class ThreadWrite(models.Model):
         verbose_name_plural = '2.掲示板書き込み'
         db_table = 'thread_write'
         unique_together = ('thread', 'number')
+        get_latest_by = 'number'
 
     thread = models.ForeignKey(Threads, verbose_name='掲示板スレッド', on_delete=models.CASCADE)
     number = models.IntegerField(verbose_name='書き込み番号')
     member = models.ForeignKey(ThreadMember, verbose_name='参加メンバー', on_delete=models.PROTECT)
     sentence = models.TextField(verbose_name='書き込み', null=False, blank=False, max_length=5000)
+    write_datetime = models.DateTimeField(verbose_name='書き込み日時', null=False, blank=False, default=timezone.now())
+
+    def next_number(self):
+        return self.number + 1
 
 
 class ThreadWriteAttachment(models.Model):
@@ -86,7 +94,7 @@ class ThreadWriteAttachment(models.Model):
     thread_write = models.ForeignKey(ThreadWrite, verbose_name='書き込み', on_delete=models.CASCADE)
     sequence = models.IntegerField(verbose_name='連番')
     attachment = models.FileField(verbose_name='添付ファイル',
-                                  upload_to=settings.STATICFILES_DIRS[0] + '/uploads/attachments/')
+                                  upload_to='attachments/')
 
 
 class DirectMessage(models.Model):
@@ -112,7 +120,7 @@ class DirectMessageAttachment(models.Model):
     message = models.ForeignKey(DirectMessage, verbose_name='メッセージ', on_delete=models.CASCADE)
     sequence = models.IntegerField(verbose_name='連番')
     attachment = models.FileField(verbose_name='添付ファイル',
-                                  upload_to=settings.STATICFILES_DIRS[0] + '/uploads/attachment_messages/')
+                                  upload_to='attachment_messages/')
 
 
 

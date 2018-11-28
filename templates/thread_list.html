@@ -11,7 +11,7 @@
                 <tr class="table-light">
                     <th>{{thread.thread_no}}</th>
                     {% if thread.open_level > 0 %}
-                    <th><a href="">{{thread.thread_title}}</a></th>
+                    <th><a href="{% url 'WGB:show_thread' thread.thread_no %}">{{thread.thread_title}}</a></th>
                     {% else %}
                         <th>{{thread.thread_title}}</th>
                     {% endif %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <form action="{% url 'WGB:exe_create_thread' %}" method="post">
+        {% csrf_token %}
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">掲示板の作成</div>
+                    <div class="card-subtitle"><span class="text-danger">{{ form.non_field_errors }}</span></div>
+                    <div class="card-text py-2">{{form.thread_title.label}}</div>
+                    <div class="py-2">{{form.thread_title}}{{form.thread_title.errors}}</div>
+                    <div class="card-text py-2">{{form.open_level.label}}</div>
+                    <div class="py-2">{{form.open_level}}{{form.open_level.error}}</div>
+                    <div class="card-text py-2">{{form.password.label}}</div>
+                    <div class="py-2">{{form.password}}{{form.password.error}}</div>
+                    <div class="py-2">※掲示板の公開レベルに合わせて、閲覧や書き込みに必要なパスワードを設定します。</div>
+                    <div class="card-text py-2">{{form.password2.label}}</div>
+                    <div class="py-2">{{form.password2}}{{form.password2.error}}</div>
+                    <div class="card-text py-2">{{form.first_write.label}}</div>
+                    <div class="py-2">{{form.first_write}}{{form.first_write.error}}</div>
+                    <button type="submit" class="btn btn-success btn-lg btn-block">作成する</button>
+                    <a href="{% url 'WGB:top' %}">キャンセル</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

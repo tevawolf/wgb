@@ -129,6 +129,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = 'var/www/{}/static'.format(PROJECT_NAME)
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'upload')
+MEDIA_URL = '/upload/'
+
 LOGIN_URL = 'wgb/'
 LOGIN_REDIRECT_URL = 'wgb/'
 AUTH_USER_MODEL = 'WGB.UserAccount'

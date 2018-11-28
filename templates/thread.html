@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+{% load custom_tags %}
+<div>
+    <div class="card">
+        <div class="card-body">
+            <div class="card-title">掲示板No.{{thread.thread_no}}.&nbsp;{{thread.thread_title}}</div>
+            <div class="card-subtitle">作成者：{{thread.threadmember_set | find_create_user}}</div>
+        </div>
+    </div>
+    {% for write in thread.threadwrite_set.all %}
+    <div class="card">
+        <div class="card-body">
+            <div class="card-title">{{write.number}}.&nbsp;{{write.member.member.display_name}}</div>
+            <div class="card-text py-2">{{write.sentence}}</div>
+            <div class="card-text py-2">{{write.write_datetime}}</div>
+        </div>
+    </div>
+    {% endfor %}
+    <form action="{% url 'WGB:write_thread' thread.thread_no %}" method="post">
+        {% csrf_token %}
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">書き込みフォーム</div>
+                    <div class="card-subtitle"><span class="text-danger">{{ form.non_field_errors }}</span></div>
+                    <div class="py-2">{{form.sentence}}{{form.sentence.errors}}</div>
+                    {# 添付ファイルの保存 #}
+                    <button type="submit" class="btn btn-success btn-lg btn-block">書き込む</button>
+                    <input type="hidden" name="thread" value="{{thread.thread_no}}"/>
+                    <input type="hidden" name="number" value="{{thread.threadwrite_set.latest.next_number}}"/>
+                    <input type="hidden" name="member" value="{{thread.threadmember_set | find_member_self:user}}"/>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

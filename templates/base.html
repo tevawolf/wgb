@@ -30,14 +30,17 @@
               <li>
                 <a class="nav-item nav-link" href="{% url 'WGB:logout' %}">ログアウト</a>
               </li>
+              <li class="nav-item">
+                  <a class="nav-item nav-link" href="{% url 'WGB:create_thread' %}">掲示板を作成</a>
+              </li>
               {% else %}
               <li>
                   <a class="nav-item nav-link" href="{% url 'WGB:show_login' %}">ログイン</a>
               </li>
-              {% endif %}
               <li class="nav-item">
                   <a class="nav-item nav-link" href="{% url 'WGB:create_user' %}">ユーザー登録</a>
               </li>
+              {% endif %}
             </ul>
         </div>
     </nav>

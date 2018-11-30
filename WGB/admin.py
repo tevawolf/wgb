@@ -24,6 +24,7 @@ class ThreadWriteAttachmentInline(admin.TabularInline):
 
 class ThreadWriteAdmin(admin.ModelAdmin):
     inlines = [ThreadWriteAttachmentInline]
+    list_filter = ['thread']
 
 
 admin.site.register(models.ThreadWrite, ThreadWriteAdmin)
@@ -36,6 +37,7 @@ class DirectMessageAttachmentInline(admin.TabularInline):
 
 class DirectMessageAdmin(admin.ModelAdmin):
     inlines = [DirectMessageAttachmentInline]
+    list_filter = ['from_member', 'to_member']
 
 
 admin.site.register(models.DirectMessage, DirectMessageAdmin)

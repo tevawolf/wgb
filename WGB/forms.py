@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from django.core.exceptions import ObjectDoesNotExist
 
 from . import models
 
@@ -64,7 +63,7 @@ class CreateThreadForm(forms.ModelForm):
 
     password2 = forms.CharField(
         label='パスワード確認用入力欄',
-        required=False,
+        required=True,
         strip=False,
         widget=forms.PasswordInput()
     )
@@ -78,17 +77,11 @@ class CreateThreadForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['password'].label = '掲示板利用パスワード(任意)'
+        self.fields['password'].label = '掲示板利用パスワード'
         self.fields['create_date'].required = False
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
             field.widget.attrs['placeholder'] = field.label
-
-    def clean_password2(self):
-        p1 = self.cleaned_data['password']
-        p2 = self.cleaned_data['password2']
-        if p1 and not p2:
-            raise forms.ValidationError('パスワードを設定する場合は確認用の入力もお願いします。')
 
     def clean(self):
         super(CreateThreadForm, self).clean()

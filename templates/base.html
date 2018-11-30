@@ -8,10 +8,11 @@
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}" />
     <script src="{% static 'jquery/jquery-3.3.1.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    {% block script %}{% endblock %}
 </head>
-<body class="bg-secondary">
+<body class="bg-secondary" onload="{% block onload %}{% endblock %}">
     <!-- ナビバー -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-warning">
+    <nav class="navbar navbar-expand-md navbar-light bg-warning">
         <a class="navbar-brand" href="{% url 'WGB:top' %}">WorewolfGameBBS</a>
         <span>ようこそ&nbsp;
         {% if user.is_authenticated %}
@@ -27,14 +28,17 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
               {% if user.is_authenticated %}
-              <li>
+              <li class="nav-item">
                 <a class="nav-item nav-link" href="{% url 'WGB:logout' %}">ログアウト</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-item nav-link" href="{% url 'WGB:show_join_thread_list' %}">メッセージを送る</a>
               </li>
               <li class="nav-item">
                   <a class="nav-item nav-link" href="{% url 'WGB:create_thread' %}">掲示板を作成</a>
               </li>
               {% else %}
-              <li>
+              <li class="nav-item">
                   <a class="nav-item nav-link" href="{% url 'WGB:show_login' %}">ログイン</a>
               </li>
               <li class="nav-item">
@@ -47,6 +51,19 @@
 
     <!-- メインコンテント -->
     <div class="container mt-3">
+        {% if messages %}
+        {% for message in messages %}
+            {% if message.tags %}
+                {% if message.tags == 'error' %}
+        <li class="text-danger">{{ message }}</li>
+                {% elif message.tags == 'warning' %}
+        <li class="text-warning">{{ message }}</li>
+                {% else %}
+        <li class="text-info">{{ message }}</li>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        {% endif %}
         {% block content %}{% endblock %}
     </div>
 </body>

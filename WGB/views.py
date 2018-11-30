@@ -4,8 +4,9 @@ from django.views import View
 from django.views.generic import list
 from django.views.generic import edit
 from django.contrib.auth import login as auth_login, logout as auth_logout
-from django.contrib.auth.views import LoginView as AuthLoginView, LogoutView as AuthLogoutView
+from django.contrib.auth.views import LoginView as AuthLoginView, LogoutView as AuthLogoutView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 
 from . import forms
 from . import models
@@ -18,6 +19,7 @@ class TopPageView(list.ListView):
     model = models.Threads
     template_name = 'thread_list.html'
     paginate_by = 50
+    ordering = ['-thread_no']
 
 
 top_page = TopPageView.as_view()
@@ -112,6 +114,12 @@ class ExecuteCreateThreadView(View):
         member.member = request.user
         member.create = True
         member.save()
+        # ななしさんを登録
+        nanashisan = models.ThreadMember()
+        nanashisan.thread = thread
+        nanashisan.member = models.UserAccount.objects.get(username='nanashisan')
+        nanashisan.create = False
+        nanashisan.save()
         # 最初の書き込みを登録
         write = models.ThreadWrite()
         write.thread = thread
@@ -131,9 +139,15 @@ class ShowThreadView(View):
     def get(self, request, thread_no, *args, **kwargs):
         thread = models.Threads.objects.get(thread_no=thread_no)
         form = forms.ThreadWriteForm()
+        member_set = thread.threadmember_set.all()
+        nanashisan = None
+        for member in member_set:
+            if member.member.username == 'nanashisan':
+                nanashisan = member
         context = {
             'thread': thread,
             'form': form,
+            'nanashisan': nanashisan,
         }
         return render(request, 'thread.html', context)
 
@@ -156,7 +170,63 @@ class ThreadWriteView(View):
 
         # 添付ファイルの保存
 
-        return redirect(reverse('WGB:show_thread', thread_no))
+        return redirect(reverse('WGB:show_thread', args=[thread_no]))
 
 
 write_thread = ThreadWriteView.as_view()
+
+
+class JoinMemberView(View):
+    """掲示板参加実行"""
+    def post(self, request, *args, **kwargs):
+        password = request.POST['password']
+        thread_no = request.POST['thread_no']
+        thread = models.Threads.objects.get(thread_no=thread_no)
+        if thread.password == hashlib.sha256(password.encode('utf-8')).hexdigest():
+            member = models.ThreadMember()
+            member.thread = thread
+            member.member = request.user
+            member.create = False
+            member.save()
+            return redirect(reverse('WGB:show_thread', args=[thread_no]))
+        else:
+            messages.add_message(request, messages.WARNING, 'パスワードが間違っています。')
+            return redirect(reverse('WGB:top'))
+
+
+join_member = JoinMemberView.as_view()
+
+
+class ShowJoinThreadListView(View):
+    """参加掲示板・メンバー一覧ページ表示"""
+    def get(self, request, *args, **kwargs):
+        members = models.ThreadMember.objects.filter(member=request.user)
+        threads = []
+        for m in members:
+            threads.append(m.thread)
+        return render(request, 'join_thread_list.html', {'threads': threads})
+
+
+show_join_thread_list = ShowJoinThreadListView.as_view()
+
+
+class ShowSenderListView(View):
+    """送受信メッセージ一覧ページ表示"""
+    def get(self, request, thread_no, member_id, *args, **kwargs):
+        pop_message = models.DirectMessage.objects.filter(thread=thread_no, to_member=member_id).order_by('-send_datetime')
+        from_member = models.ThreadMember.objects.get(thread=thread_no, member=request.user)
+        send_message = models.DirectMessage.objects.filter(thread=thread_no, from_member=from_member).order_by('-send_datetime')
+        context = {'pop': pop_message, 'send': send_message, 'thread_no': thread_no, 'member_id': member_id}
+        return render(request, 'sender_list.html', context)
+
+
+show_sender_list = ShowSenderListView.as_view()
+
+
+class SendMessageView(View):
+    """メッセージ送信ページ表示"""
+    def get(self, request, thread_no, member_id, *args, **kwargs):
+        pass
+
+
+send_message = SendMessageView.as_view()

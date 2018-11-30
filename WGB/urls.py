@@ -14,4 +14,8 @@ urlpatterns = [
     path('exe_create_thread', views.execute_create_thread, name='exe_create_thread'),
     path('thread<int:thread_no>/', views.show_thread, name='show_thread'),
     path('write_thread<int:thread_no>/', views.write_thread, name='write_thread'),
+    path('join_member/', views.join_member, name='join_member'),
+    path('show_join_thread_list/', views.show_join_thread_list, name='show_join_thread_list'),
+    path('show_sender_list/thread<int:thread_no>/member<int:member_id>', views.show_sender_list, name='show_sender_list'),
+    path('send_message/thread<int:thread_no>/member<int:member_id>', views.send_message, name='send_message'),
 ]

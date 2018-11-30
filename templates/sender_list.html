@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block script %}
+<script type="text/javascript">
+function sublist( target ) {
+   var TargetList = target.parentNode.getElementsByTagName('ul');
+   if ( TargetList[0].style.display == 'none' ) {
+      TargetList[0].style.display = 'block';
+   }
+   else {
+      TargetList[0].style.display = 'none';
+   }
+}
+function allshowhide( showhide ) {
+   var TargetLabels = document.getElementsByClassName('menu');
+   for (var i=0; i<TargetLabels.length; i++) {
+      var TargetLists = TargetLabels[i].parentNode.getElementsByTagName('ul');
+      TargetLists[0].style.display = showhide;
+   }
+}
+</script>
+{% endblock %}
+
+{% block onload %}allshowhide('none');{% endblock %}
+
+{% block content %}
+{% load custom_tags %}
+<div>
+    <div class="col-md-12">
+        <div class="card bg-light">
+
+            <div class="card-body">
+                <div class="card-title">{{p.to_member.member.display_name}}の送受信一覧</div>
+            </div>
+            <div class="card-body">
+                <div class="card-title"><a href="{% url 'WGB:send_message' thread_no member_id %}">メッセージを送る</a></div>
+            </div>
+            <div class="card-body">
+                <div class="card-title">受信メッセージ</div>
+                {% for p in pop %}
+                    {{p.sequence}}
+                    {{p.message}}
+                    {{p.send_datetime}}
+                {% endfor %}
+            </div>
+            <div class="card-body">
+                <div class="card-title">送信メッセージ</div>
+                {% for s in send %}
+                    {{s.to_member.member.display_name}}.{{s.sequence}}
+                    {{s.message}}
+                    {{s.send_datetime}}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block script %}
+<script type="text/javascript">
+function sublist( target ) {
+   var TargetList = target.parentNode.getElementsByTagName('ul');
+   if ( TargetList[0].style.display == 'none' ) {
+      TargetList[0].style.display = 'block';
+   }
+   else {
+      TargetList[0].style.display = 'none';
+   }
+}
+function allshowhide( showhide ) {
+   var TargetLabels = document.getElementsByClassName('menu');
+   for (var i=0; i<TargetLabels.length; i++) {
+      var TargetLists = TargetLabels[i].parentNode.getElementsByTagName('ul');
+      TargetLists[0].style.display = showhide;
+   }
+}
+</script>
+{% endblock %}
+
+{% block onload %}allshowhide('none');{% endblock %}
+
+{% block content %}
+{% load custom_tags %}
+<div>
+    <div class="col-md-12">
+        <div class="card bg-light">
+
+            <div class="card-body">
+                <div class="card-title">あて先選択</div>
+                {% for thread in threads %}
+                <ul>
+                    <li>
+                        <a  href="url" class="menu" onclick="sublist(this); return false;">{{thread.thread_no}}.{{thread.thread_title}}</a>
+                        <ul>
+                        {% for member in thread.threadmember_set.all %}
+                        {% if member.member != user %}
+                            <li><a href="{% url 'WGB:show_sender_list' thread.thread_no member.id %}">{{member.member.display_name}}</a></li>
+                        {% endif %}
+                        {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

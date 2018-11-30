@@ -1,10 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User, AbstractUser
+from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
-
-from datetime import datetime
-
-from config import settings
 
 
 class UserAccount(AbstractUser):
@@ -14,7 +10,7 @@ class UserAccount(AbstractUser):
         db_table = 'user_account'
 
     nickname = models.CharField(verbose_name='ニックネーム', max_length=100, null=False, blank=True)
-    icon = models.ImageField(verbose_name='アイコン画像パス', upload_to='icons/')
+    icon = models.ImageField(verbose_name='アイコン画像パス', upload_to='icons/', null=True, blank=True)
 
     def display_name(self):
         if self.nickname:
@@ -33,12 +29,11 @@ class Threads(models.Model):
     thread_title = models.CharField(verbose_name='掲示板タイトル', max_length=100, null=False, blank=False)
     create_date = models.DateTimeField(verbose_name='作成日時', default=timezone.now())
     OPEN_LEVEL = (
-        (0, '非公開(パスワードがないと閲覧・書き込み不可)'),
-        (1, '閲覧のみ(パスワードがないと書き込み不可)'),
-        (2, '閲覧・書き込みとも可能'),
+        (0, '非公開 (参加者のみ閲覧・書き込み可)'),
+        (1, '閲覧のみ (参加者のみ書き込み可)'),
     )
     open_level = models.SmallIntegerField(verbose_name='公開レベル', choices=OPEN_LEVEL, null=False, blank=False)
-    password = models.CharField(verbose_name='利用パスワード', max_length=100, null=True, blank=True)
+    password = models.CharField(verbose_name='利用パスワード', max_length=100, null=False, blank=False)
 
     def __str__(self):
         return '{}:{}'.format(self.thread_no, self.thread_title)
@@ -83,6 +78,9 @@ class ThreadWrite(models.Model):
     def next_number(self):
         return self.number + 1
 
+    def __str__(self):
+        return '{}.{}'.format(self.thread, self.number)
+
 
 class ThreadWriteAttachment(models.Model):
     class Meta:
@@ -102,12 +100,16 @@ class DirectMessage(models.Model):
         verbose_name = 'メッセージ'
         verbose_name_plural = '3.ダイレクトメッセージ'
         db_table = 'direct_message'
-        unique_together = ('thread', 'member', 'sequence')
+        unique_together = ('thread', 'from_member', 'to_member')
 
     thread = models.ForeignKey(Threads, verbose_name='掲示板スレッド', on_delete=models.CASCADE)
-    member = models.ForeignKey(ThreadMember, verbose_name='参加メンバー', on_delete=models.PROTECT)
+    from_member = models.ForeignKey(ThreadMember, related_name='from_member', verbose_name='送信者',
+                                    on_delete=models.PROTECT, null=False, blank=False)
+    to_member = models.ForeignKey(ThreadMember, related_name='to_member',  verbose_name='送信相手',
+                                  on_delete=models.PROTECT, null=False, blank=False)
     sequence = models.IntegerField(verbose_name='連番')
     message = models.TextField(verbose_name='メッセージ', null=False, blank=False, max_length=5000)
+    send_datetime = models.DateTimeField(verbose_name='送信日時', null=False, blank=False, default=timezone.now())
 
 
 class DirectMessageAttachment(models.Model):

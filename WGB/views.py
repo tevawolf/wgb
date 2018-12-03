@@ -14,6 +14,16 @@ from . import models
 import hashlib
 
 
+class MemberChecker:
+    def member_check(self, request, thread):
+        if not request.user.is_authenticated\
+                or not models.ThreadMember.objects.filter(thread=thread, member=request.user).exists():
+            messages.add_message(request, messages.WARNING, '不正な操作です。')
+            return False
+        else:
+            return True
+
+
 class TopPageView(list.ListView):
     """トップページ表示"""
     model = models.Threads
@@ -114,12 +124,6 @@ class ExecuteCreateThreadView(View):
         member.member = request.user
         member.create = True
         member.save()
-        # ななしさんを登録
-        nanashisan = models.ThreadMember()
-        nanashisan.thread = thread
-        nanashisan.member = models.UserAccount.objects.get(username='nanashisan')
-        nanashisan.create = False
-        nanashisan.save()
         # 最初の書き込みを登録
         write = models.ThreadWrite()
         write.thread = thread
@@ -134,20 +138,18 @@ class ExecuteCreateThreadView(View):
 execute_create_thread = ExecuteCreateThreadView.as_view()
 
 
-class ShowThreadView(View):
+class ShowThreadView(View, MemberChecker):
     """掲示板ページ表示"""
     def get(self, request, thread_no, *args, **kwargs):
         thread = models.Threads.objects.get(thread_no=thread_no)
+        # 参加チェック
+        if thread.open_level == 0 and not self.member_check(request, thread):
+            return redirect(reverse('WGB:top'))
+
         form = forms.ThreadWriteForm()
-        member_set = thread.threadmember_set.all()
-        nanashisan = None
-        for member in member_set:
-            if member.member.username == 'nanashisan':
-                nanashisan = member
         context = {
             'thread': thread,
             'form': form,
-            'nanashisan': nanashisan,
         }
         return render(request, 'thread.html', context)
 
@@ -155,9 +157,14 @@ class ShowThreadView(View):
 show_thread = ShowThreadView.as_view()
 
 
-class ThreadWriteView(View):
+class ThreadWriteView(View, MemberChecker):
     """掲示板書き込み実行"""
     def post(self, request, thread_no, *args, ** kwargs):
+
+        # 認証
+        if not self.member_check(request, thread_no):
+            return redirect(reverse('WGB:top'))
+
         form = forms.ThreadWriteForm(request.POST)
         if not form.is_valid():
             return render(request, 'thread.html',
@@ -210,23 +217,95 @@ class ShowJoinThreadListView(View):
 show_join_thread_list = ShowJoinThreadListView.as_view()
 
 
-class ShowSenderListView(View):
+class ShowSenderListView(View, MemberChecker):
     """送受信メッセージ一覧ページ表示"""
     def get(self, request, thread_no, member_id, *args, **kwargs):
-        pop_message = models.DirectMessage.objects.filter(thread=thread_no, to_member=member_id).order_by('-send_datetime')
-        from_member = models.ThreadMember.objects.get(thread=thread_no, member=request.user)
-        send_message = models.DirectMessage.objects.filter(thread=thread_no, from_member=from_member).order_by('-send_datetime')
-        context = {'pop': pop_message, 'send': send_message, 'thread_no': thread_no, 'member_id': member_id}
+
+        # 参加チェック
+        if not self.member_check(request, thread_no):
+            return redirect(reverse('WGB:top'))
+
+        member_object = models.ThreadMember.objects.get(pk=member_id)
+        member_self = models.ThreadMember.objects.get(thread=thread_no, member=request.user)
+        pop_message = models.DirectMessage.objects.filter(from_member=member_object, to_member=member_self).order_by('-send_datetime')
+        send_message = models.DirectMessage.objects.filter(from_member=member_self, to_member=member_object).order_by('-send_datetime')
+        thread_title = models.Threads.objects.get(thread_no=thread_no).thread_title
+        context = {
+            'member': member_object,
+            'pop': pop_message,
+            'send': send_message,
+            'thread_no': thread_no,
+            'thread_title': thread_title
+        }
         return render(request, 'sender_list.html', context)
 
 
 show_sender_list = ShowSenderListView.as_view()
 
 
-class SendMessageView(View):
+class SendMessageView(View, MemberChecker):
     """メッセージ送信ページ表示"""
     def get(self, request, thread_no, member_id, *args, **kwargs):
-        pass
+
+        # 参加チェック
+        if not self.member_check(request, thread_no):
+            return redirect(reverse('WGB:top'))
+
+        form = forms.DirectMessageForm
+        from_member = models.ThreadMember.objects.get(thread=thread_no, member=request.user)
+        to_member = models.ThreadMember.objects.get(pk=member_id)
+        if models.DirectMessage.objects.filter(from_member=from_member, to_member=to_member).exists():
+            next_sequence = models.DirectMessage.objects.filter(
+                from_member=from_member, to_member=to_member
+            ).latest().next_sequence()
+        else:
+            next_sequence = 1
+        context = {
+            'from_member': from_member,
+            'to_member': to_member,
+            'form': form,
+            'sequence': next_sequence,
+        }
+        return render(request, 'send_message.html', context)
 
 
 send_message = SendMessageView.as_view()
+
+
+class ExecuteSendMessageView(View):
+    """メッセージ送信実行"""
+    def post(self, request, *args, **kwargs):
+        form = forms.DirectMessageForm(request.POST)
+        if not form.is_valid():
+            return render(request, 'send_message.html', {'form': form, })
+
+        form.save()
+        # 添付ファイルの保存
+        member = form.cleaned_data['to_member']
+        return redirect(reverse('WGB:show_sender_list', args=[member.thread.thread_no, member.id]))
+
+
+exe_send_message = ExecuteSendMessageView.as_view()
+
+
+class ShowMessageView(View, MemberChecker):
+    """メッセージ表示ページ"""
+    def get(self, request, message_id, member_object_id, *args, **kwargs):
+
+        message = models.DirectMessage.objects.get(pk=message_id)
+        thread = models.Threads.objects.get(thread_no=message.from_member.thread.thread_no)
+
+        # 参加チェック
+        if not self.member_check(request, thread.thread_no):
+            return redirect(reverse('WGB:top'))
+
+        context = {
+            'message': message,
+            'thread': thread,
+            'member_object_id': member_object_id,
+        }
+        return render(request, 'show_message.html', context)
+
+
+show_message = ShowMessageView.as_view()
+

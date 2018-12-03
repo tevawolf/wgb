@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+{% load custom_tags %}
+<div class="row">
+    <div class="col-md-8">
+        <div>
+            <div class="card bg-primary text-light">
+                <div class="card-body">
+                    <div class="card-title">掲示板No.{{thread.thread_no}}.&nbsp;{{thread.thread_title}}</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title" style="font-size:80%;">
+                        <span>送り主:{{message.from_member.member.display_name}}さん</span>
+                        <span>あて先：{{message.to_member.member.display_name}}さん</span>
+                        <span style="font-size:80%; position:relative; left:20px;">{{message.send_datetime}}</span>
+                    </div>
+                    <div class="card-text py-2" style="padding:10px;">{{message.message}}</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <a href="{% url 'WGB:show_sender_list' thread.thread_no member_object_id %}">送受信一覧に戻る</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

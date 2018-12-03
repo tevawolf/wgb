@@ -7,14 +7,14 @@
             <div class="card bg-primary text-light">
                 <div class="card-body">
                     <div class="card-title">掲示板No.{{thread.thread_no}}.&nbsp;{{thread.thread_title}}</div>
-                    <div class="card-subtitle" style="display:block; text-align:right;">作成者：{{thread.threadmember_set|find_create_user}}</div>
+                    <div class="card-subtitle" style="display:block; text-align:right;">作成者：{{thread.threadmember_set|find_create_user}}さん</div>
                 </div>
             </div>
             {% for write in thread.threadwrite_set.all %}
             <div class="card">
                 <div class="card-body">
                     <div class="card-title" style="font-size:80%;">
-                        <span>{{write.number}}.&nbsp;{{write.member.member.display_name}}</span>
+                        <span>{{write.number}}.&nbsp;{{write.member.member.display_name}}さん</span>
                         <span style="font-size:80%; position:relative; left:20px;">{{write.write_datetime}}</span>
                     </div>
                     <div class="card-text py-2" style="padding:10px;">{{write.sentence}}</div>
@@ -26,7 +26,7 @@
             {% if thread.open_level == 1 and not thread.threadmember_set|find_member_self:user %}
             {# 閲覧のみ掲示板で、ログインしており、参加していない場合、参加フォーム  #}
             <div class="w-75 mx-auto">
-                <form action="{% url 'WGB:add_member' %}" method="post">
+                <form action="{% url 'WGB:join_member' %}" method="post">
                     {% csrf_token %}
                     <div class="card">
                         <div class="card-body">
@@ -64,7 +64,14 @@
             <div class="card-body">
                 <div>参加メンバー</div>
                 {% for member in thread.threadmember_set.all %}
-                <li><a href="">{{member.member.display_name}}</a></li>
+                <li>
+                {# 自分が参加している場合だけリンク表示→メッセージ使用可能 #}
+                {% if user.is_authenticated and thread.open_level == 1 and thread.threadmember_set|find_member_self:user %}
+                    <a href="{% url 'WGB:show_sender_list' thread.thread_no member.id %}">{{member.member.display_name}}さん</a>
+                {% else %}
+                    <span>{{member.member.display_name}}さん</span>
+                {% endif %}
+                </li>
                 {% endfor %}
             </div>
         </div>

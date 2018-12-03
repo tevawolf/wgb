@@ -100,16 +100,20 @@ class DirectMessage(models.Model):
         verbose_name = 'メッセージ'
         verbose_name_plural = '3.ダイレクトメッセージ'
         db_table = 'direct_message'
-        unique_together = ('thread', 'from_member', 'to_member')
+        unique_together = ('from_member', 'to_member', 'sequence')
+        get_latest_by = ('from_member', 'to_member', 'sequence')
 
-    thread = models.ForeignKey(Threads, verbose_name='掲示板スレッド', on_delete=models.CASCADE)
     from_member = models.ForeignKey(ThreadMember, related_name='from_member', verbose_name='送信者',
                                     on_delete=models.PROTECT, null=False, blank=False)
     to_member = models.ForeignKey(ThreadMember, related_name='to_member',  verbose_name='送信相手',
                                   on_delete=models.PROTECT, null=False, blank=False)
     sequence = models.IntegerField(verbose_name='連番')
+    title = models.CharField(verbose_name='タイトル', null=False, blank=False, max_length=100)
     message = models.TextField(verbose_name='メッセージ', null=False, blank=False, max_length=5000)
     send_datetime = models.DateTimeField(verbose_name='送信日時', null=False, blank=False, default=timezone.now())
+
+    def next_sequence(self):
+        return self.sequence + 1
 
 
 class DirectMessageAttachment(models.Model):

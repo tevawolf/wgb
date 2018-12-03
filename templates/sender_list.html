@@ -28,28 +28,48 @@ function allshowhide( showhide ) {
 <div>
     <div class="col-md-12">
         <div class="card bg-light">
-
             <div class="card-body">
-                <div class="card-title">{{p.to_member.member.display_name}}の送受信一覧</div>
+                <div class="card-title">{{member.member.display_name}}さん＠掲示板No.{{thread_no}}.{{thread_title}}との送受信一覧</div>
+                <div class="card-title"><a href="{% url 'WGB:send_message' thread_no member.id %}">{{member.member.display_name}}さんにメッセージを送る</a></div>
+                <div class="card-title" style="text-align:right;"><a href="{% url 'WGB:show_thread' thread_no %}">掲示板に移動</a></div>
             </div>
-            <div class="card-body">
-                <div class="card-title"><a href="{% url 'WGB:send_message' thread_no member_id %}">メッセージを送る</a></div>
-            </div>
+        </div>
+        <div class="card bg-light">
             <div class="card-body">
                 <div class="card-title">受信メッセージ</div>
-                {% for p in pop %}
-                    {{p.sequence}}
-                    {{p.message}}
-                    {{p.send_datetime}}
-                {% endfor %}
+                <table class="table table-striped table-bordered table-hover table-condensed table-md">
+                    <thead class="thead-light">
+                        <tr><th>No</th><th>タイトル</th><th>送信日時</th></tr>
+                    </thead>
+                    <tbody>
+                    {% for p in pop %}
+                        <tr class="table-light">
+                            <td>{{p.sequence}}</td>
+                            <td><a href="{% url 'WGB:show_message' p.id member.id %}">{{p.title}}</a></td>
+                            <td>{{p.send_datetime}}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
+        </div>
+        <div class="card bg-light">
             <div class="card-body">
                 <div class="card-title">送信メッセージ</div>
-                {% for s in send %}
-                    {{s.to_member.member.display_name}}.{{s.sequence}}
-                    {{s.message}}
-                    {{s.send_datetime}}
-                {% endfor %}
+                <table class="table table-striped table-bordered table-hover table-condensed table-md">
+                    <thead class="thead-light">
+                        <tr><th>No</th><th>タイトル</th><th>送信日時</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for s in send %}
+                        <tr class="table-light">
+                            <td>{{s.sequence}}</td>
+                            <td><a href="{% url 'WGB:show_message' s.id member.id %}">{{s.title}}</a></td>
+                            <td>{{s.send_datetime}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

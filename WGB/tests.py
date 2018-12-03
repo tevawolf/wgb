@@ -1,3 +1,15 @@
 from django.test import TestCase
+from . import models
 
-# Create your tests here.
+
+class UserAccountTests(TestCase):
+    def test_blank_icon(self):
+        account = models.UserAccount()
+        account.username = 'test'
+        account.password = 'test'
+        account.nickname = 'test'
+        account.save()
+
+        saved = models.UserAccount.objects.get(username='test')
+        self.assertEqual(saved.username, 'test')
+

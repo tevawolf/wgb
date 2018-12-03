@@ -18,4 +18,6 @@ urlpatterns = [
     path('show_join_thread_list/', views.show_join_thread_list, name='show_join_thread_list'),
     path('show_sender_list/thread<int:thread_no>/member<int:member_id>', views.show_sender_list, name='show_sender_list'),
     path('send_message/thread<int:thread_no>/member<int:member_id>', views.send_message, name='send_message'),
+    path('exe_send_message/', views.exe_send_message, name='exe_send_message'),
+    path('show_message/<int:message_id>/<int:member_object_id>', views.show_message, name='show_message'),
 ]

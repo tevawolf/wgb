@@ -38,7 +38,7 @@ function allshowhide( showhide ) {
                         <ul>
                         {% for member in thread.threadmember_set.all %}
                         {% if member.member != user %}
-                            <li><a href="{% url 'WGB:show_sender_list' thread.thread_no member.id %}">{{member.member.display_name}}</a></li>
+                            <li><a href="{% url 'WGB:show_sender_list' thread.thread_no member.id %}">{{member.member.display_name}}さん</a></li>
                         {% endif %}
                         {% endfor %}
                         </ul>

@@ -103,3 +103,18 @@ class ThreadWriteForm(forms.ModelForm):
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
             field.widget.attrs['placeholder'] = field.label
+
+
+class DirectMessageForm(forms.ModelForm):
+    """メッセージ送信フォーム"""
+    class Meta:
+        model = models.DirectMessage
+        fields = ('from_member', 'to_member', 'sequence', 'title', 'message', )
+        widgets = {'message': forms.Textarea(attrs={'rows': 4, 'cols': 40})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['placeholder'] = field.label
+

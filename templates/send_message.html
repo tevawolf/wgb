@@ -4,68 +4,27 @@
 <div class="row">
     <div class="col-md-8">
         <div>
-            <div class="card bg-primary text-light">
-                <div class="card-body">
-                    <div class="card-title">掲示板No.{{thread.thread_no}}.&nbsp;{{thread.thread_title}}</div>
-                    <div class="card-subtitle" style="display:block; text-align:right;">作成者：{{thread.threadmember_set|find_create_user}}</div>
-                </div>
-            </div>
-            {% for write in thread.threadwrite_set.all %}
-            <div class="card">
-                <div class="card-body">
-                    <div class="card-title" style="font-size:80%;">
-                        <span>{{write.number}}.&nbsp;{{write.member.member.display_name}}</span>
-                        <span style="font-size:80%; position:relative; left:20px;">{{write.write_datetime}}</span>
-                    </div>
-                    <div class="card-text py-2" style="padding:10px;">{{write.sentence}}</div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% if user.is_authenticated %}
-            {% if thread.open_level == 1 and not thread.threadmember_set|find_member_self:user %}
-            {# 閲覧のみ掲示板で、ログインしており、参加していない場合、参加フォーム  #}
-            <div class="w-75 mx-auto">
-                <form action="{% url 'WGB:add_member' %}" method="post">
+            <div class="w-75 mx-auto bg-primary">
+                <form action="{% url 'WGB:exe_send_message' %}" method="post">
                     {% csrf_token %}
                     <div class="card">
                         <div class="card-body">
-                            <span>参加パスワード</span><input type="password" name="password"/>
-                            <button type="submit" class="btn btn-info">参加する</button>
-                            <input type="hidden" name="thread_no" value="{{thread.thread_no}}">
-                        </div>
-                    </div>
-                </form>
-            </div>
-            {% else %}
-            {# 書き込みフォーム  #}
-            <div class="w-75 mx-auto">
-                <form action="{% url 'WGB:write_thread' thread.thread_no %}" method="post">
-                    {% csrf_token %}
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="card-title">書き込みフォーム</div>
+                            <div class="card-title">メッセージ送信</div>
                             <div class="card-subtitle"><span class="text-danger">{{ form.non_field_errors }}</span></div>
-                            <div class="py-2">{{form.sentence}}{{form.sentence.errors}}</div>
+                            <div class="card-text py-2">{{form.to_member.label}}:{{to_member.member.display_name}}さん</div>
+                            <div class="card-text py-2">{{form.title.label}}</div>
+                            <div class="py-2">{{form.title}}{{form.title.error}}</div>
+                            <div class="card-text py-2">{{form.message.label}}</div>
+                            <div class="py-2">{{form.message}}{{form.message.errors}}</div>
                             {# 添付ファイルの保存 #}
                             <button type="submit" class="btn btn-success btn-lg btn-block">書き込む</button>
-                            <input type="hidden" name="thread" value="{{thread.thread_no}}"/>
-                            <input type="hidden" name="number" value="{{thread.threadwrite_set.latest.next_number}}"/>
-                            <input type="hidden" name="member" value="{{thread.threadmember_set|find_member_self:user}}"/>
+                            <input type="hidden" name="from_member" value="{{from_member.id}}"/>
+                            <input type="hidden" name="to_member" value="{{to_member.id}}"/>
+                            <input type="hidden" name="sequence" value="{{sequence}}"/>
+                            <a href="{% url 'WGB:show_sender_list' from_member.thread.thread_no to_member.id %}">キャンセル</a>
                         </div>
                     </div>
                 </form>
-            </div>
-            {% endif %}
-        {% endif %}
-    </div>
-    <div class="col-md-4">
-        <div class="card bg-light">
-            <div class="card-body">
-                <div>参加メンバー</div>
-                {% for member in thread.threadmember_set.all %}
-                <li><a href="">{{member.member.display_name}}</a></li>
-                {% endfor %}
             </div>
         </div>
     </div>

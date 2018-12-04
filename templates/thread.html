@@ -17,7 +17,7 @@
                         <span>{{write.number}}.&nbsp;{{write.member.member.display_name}}さん</span>
                         <span style="font-size:80%; position:relative; left:20px;">{{write.write_datetime}}</span>
                     </div>
-                    <div class="card-text py-2" style="padding:10px;">{{write.sentence}}</div>
+                    <div class="card-text py-2" style="padding:10px;">{{write.sentence | safe | urlize | linebreaksbr}}</div>
                 </div>
             </div>
             {% endfor %}

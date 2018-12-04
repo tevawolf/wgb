@@ -10,9 +10,10 @@ from django.contrib import messages
 
 from . import forms
 from . import models
+from .character_decoration import CharacterDecoration
 
 import hashlib
-
+import html
 
 class MemberChecker:
     def member_check(self, request, thread):
@@ -129,7 +130,10 @@ class ExecuteCreateThreadView(View):
         write.thread = thread
         write.number = 1
         write.member = member
-        write.sentence = form.cleaned_data['first_write']
+        escape_sentence = html.escape(form.cleaned_data['first_write'])
+        cd = CharacterDecoration()
+        decorate_sentence = cd.decorate(escape_sentence)
+        write.sentence = decorate_sentence
         write.save()
 
         return redirect(reverse('WGB:top'))
@@ -174,6 +178,11 @@ class ThreadWriteView(View, MemberChecker):
                           })
 
         write = form.save()
+        escape_sentence = html.escape(write.sentence)
+        cd = CharacterDecoration()
+        decorate_sentence = cd.decorate(escape_sentence)
+        write.sentence = decorate_sentence
+        write.save()
 
         # 添付ファイルの保存
 
@@ -279,8 +288,15 @@ class ExecuteSendMessageView(View):
         if not form.is_valid():
             return render(request, 'send_message.html', {'form': form, })
 
-        form.save()
+        message = form.save()
+        escape_message = html.escape(form.cleaned_data['message'])
+        cd = CharacterDecoration()
+        decorate_message = cd.decorate(escape_message)
+        message.message = decorate_message
+        message.save()
+
         # 添付ファイルの保存
+
         member = form.cleaned_data['to_member']
         return redirect(reverse('WGB:show_sender_list', args=[member.thread.thread_no, member.id]))
 

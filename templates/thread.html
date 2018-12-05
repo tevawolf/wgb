@@ -66,7 +66,7 @@
                 {% for member in thread.threadmember_set.all %}
                 <li>
                 {# 自分が参加している場合だけリンク表示→メッセージ使用可能 #}
-                {% if user.is_authenticated and thread.open_level == 1 and thread.threadmember_set|find_member_self:user %}
+                {% if user.is_authenticated and thread.open_level == 1 and thread.threadmember_set|find_member_self:user and not member.member == user %}
                     <a href="{% url 'WGB:show_sender_list' thread.thread_no member.id %}">{{member.member.display_name}}さん</a>
                 {% else %}
                     <span>{{member.member.display_name}}さん</span>

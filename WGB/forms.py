@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.validators import FileExtensionValidator
 
 from . import models
 
@@ -98,6 +99,13 @@ class ThreadWriteForm(forms.ModelForm):
         fields = ('thread', 'number', 'member', 'sentence', )
         widgets = {'sentence': forms.Textarea(attrs={'rows': 4, 'cols': 40})}
 
+    attachment1 = forms.ImageField(label='画像添付１', required=False,
+                                   validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
+    attachment2 = forms.ImageField(label='画像添付２', required=False,
+                                   validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
+    attachment3 = forms.ImageField(label='画像添付３', required=False,
+                                   validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
@@ -111,6 +119,13 @@ class DirectMessageForm(forms.ModelForm):
         model = models.DirectMessage
         fields = ('from_member', 'to_member', 'sequence', 'title', 'message', )
         widgets = {'message': forms.Textarea(attrs={'rows': 4, 'cols': 40})}
+
+    attachment1 = forms.ImageField(label='画像添付１', required=False,
+                                   validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
+    attachment2 = forms.ImageField(label='画像添付２', required=False,
+                                   validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
+    attachment3 = forms.ImageField(label='画像添付３', required=False,
+                                   validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -2,6 +2,12 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 
+import os
+
+
+def get_upload_to(instance, filename):
+    return os.path.join(instance.category, filename)
+
 
 class UserAccount(AbstractUser):
     class Meta:
@@ -10,7 +16,8 @@ class UserAccount(AbstractUser):
         db_table = 'user_account'
 
     nickname = models.CharField(verbose_name='ニックネーム', max_length=100, null=False, blank=True)
-    icon = models.ImageField(verbose_name='アイコン画像パス', upload_to='icons/', null=True, blank=True)
+    icon = models.ImageField(verbose_name='アイコン画像パス', upload_to=get_upload_to, null=True, blank=True)
+    category = 'icon'
 
     def display_name(self):
         if self.nickname:
@@ -91,8 +98,8 @@ class ThreadWriteAttachment(models.Model):
 
     thread_write = models.ForeignKey(ThreadWrite, verbose_name='書き込み', on_delete=models.CASCADE)
     sequence = models.IntegerField(verbose_name='連番')
-    attachment = models.FileField(verbose_name='添付ファイル',
-                                  upload_to='attachments/')
+    attachment = models.ImageField(verbose_name='添付画像ファイル', upload_to=get_upload_to, null=True, blank=True)
+    category = 'attachment_write'
 
 
 class DirectMessage(models.Model):
@@ -125,8 +132,5 @@ class DirectMessageAttachment(models.Model):
 
     message = models.ForeignKey(DirectMessage, verbose_name='メッセージ', on_delete=models.CASCADE)
     sequence = models.IntegerField(verbose_name='連番')
-    attachment = models.FileField(verbose_name='添付ファイル',
-                                  upload_to='attachment_messages/')
-
-
-
+    attachment = models.ImageField(verbose_name='添付ファイル', upload_to=get_upload_to, null=True, blank=True)
+    category = 'attachment_messages'

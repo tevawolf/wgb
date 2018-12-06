@@ -5,7 +5,7 @@
     <div class="col-md-8">
         <div>
             <div class="w-75 mx-auto bg-primary">
-                <form action="{% url 'WGB:exe_send_message' %}" method="post">
+                <form action="{% url 'WGB:exe_send_message' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="card">
                         <div class="card-body">
@@ -16,7 +16,10 @@
                             <div class="py-2">{{form.title}}{{form.title.error}}</div>
                             <div class="card-text py-2">{{form.message.label}}</div>
                             <div class="py-2">{{form.message}}{{form.message.errors}}</div>
-                            {# 添付ファイルの保存 #}
+                            {# 添付ファイル #}
+                            <div class="py-2">{{form.attachment1.label}}{{form.attachment1}}{{form.attachment1.errors}}</div>
+                            <div class="py-2">{{form.attachment2.label}}{{form.attachment2}}{{form.attachment2.errors}}</div>
+                            <div class="py-2">{{form.attachment3.label}}{{form.attachment3}}{{form.attachment3.errors}}</div>
                             <button type="submit" class="btn btn-success btn-lg btn-block">書き込む</button>
                             <input type="hidden" name="from_member" value="{{from_member.id}}"/>
                             <input type="hidden" name="to_member" value="{{to_member.id}}"/>

@@ -17,6 +17,13 @@
                         <span>{{write.number}}.&nbsp;{{write.member.member.display_name}}さん</span>
                         <span style="font-size:80%; position:relative; left:20px;">{{write.write_datetime}}</span>
                     </div>
+                    {% if write.threadwriteattachment_set.all %}
+                    <div class="card-text py-2" style="padding:10px;">
+                        {% for attach in write.threadwriteattachment_set.all %}
+                        <img src="{{ attach.attachment.url }}" />
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                     <div class="card-text py-2" style="padding:10px;">{{write.sentence | safe | urlize | linebreaksbr}}</div>
                 </div>
             </div>
@@ -40,14 +47,17 @@
             {% else %}
             {# 書き込みフォーム  #}
             <div class="w-75 mx-auto">
-                <form action="{% url 'WGB:write_thread' thread.thread_no %}" method="post">
+                <form action="{% url 'WGB:write_thread' thread.thread_no %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title">書き込みフォーム</div>
                             <div class="card-subtitle"><span class="text-danger">{{ form.non_field_errors }}</span></div>
                             <div class="py-2">{{form.sentence}}{{form.sentence.errors}}</div>
-                            {# 添付ファイルの保存 #}
+                            {# 添付ファイル #}
+                            <div class="py-2">{{form.attachment1.label}}{{form.attachment1}}{{form.attachment1.errors}}</div>
+                            <div class="py-2">{{form.attachment2.label}}{{form.attachment2}}{{form.attachment2.errors}}</div>
+                            <div class="py-2">{{form.attachment3.label}}{{form.attachment3}}{{form.attachment3.errors}}</div>
                             <button type="submit" class="btn btn-success btn-lg btn-block">書き込む</button>
                             <input type="hidden" name="thread" value="{{thread.thread_no}}"/>
                             <input type="hidden" name="number" value="{{thread.threadwrite_set.latest.next_number}}"/>

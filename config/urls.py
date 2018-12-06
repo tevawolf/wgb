@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 admin.site.site_title = 'WGBデータメンテナンス'
 admin.site.site_header = 'WarewolfGameBBS(Base)データメンテナンス画面'
 admin.site.index_title = 'index'
@@ -24,3 +28,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('wgb/', include('WGB.urls')),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

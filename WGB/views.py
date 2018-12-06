@@ -15,6 +15,7 @@ from .character_decoration import CharacterDecoration
 import hashlib
 import html
 
+
 class MemberChecker:
     def member_check(self, request, thread):
         if not request.user.is_authenticated\
@@ -23,6 +24,13 @@ class MemberChecker:
             return False
         else:
             return True
+
+
+class MessageWriter:
+    def decorate(self, message):
+        escape_sentence = html.escape(message)
+        cd = CharacterDecoration()
+        return cd.decorate(escape_sentence)
 
 
 class TopPageView(list.ListView):
@@ -107,7 +115,7 @@ class CreateThreadView(edit.FormView):
 create_thread = CreateThreadView.as_view()
 
 
-class ExecuteCreateThreadView(View):
+class ExecuteCreateThreadView(View, MessageWriter):
     """掲示板作成実行"""
     def post(self, request, *args, **kwargs):
         form = forms.CreateThreadForm(request.POST)
@@ -125,16 +133,16 @@ class ExecuteCreateThreadView(View):
         member.member = request.user
         member.create = True
         member.save()
+
         # 最初の書き込みを登録
         write = models.ThreadWrite()
         write.thread = thread
         write.number = 1
         write.member = member
-        escape_sentence = html.escape(form.cleaned_data['first_write'])
-        cd = CharacterDecoration()
-        decorate_sentence = cd.decorate(escape_sentence)
-        write.sentence = decorate_sentence
+        # 文字装飾
+        write.sentence = self.decorate(form.cleaned_data['first_write'])
         write.save()
+        # 画像添付
 
         return redirect(reverse('WGB:top'))
 
@@ -161,7 +169,7 @@ class ShowThreadView(View, MemberChecker):
 show_thread = ShowThreadView.as_view()
 
 
-class ThreadWriteView(View, MemberChecker):
+class ThreadWriteView(View, MemberChecker, MessageWriter):
     """掲示板書き込み実行"""
     def post(self, request, thread_no, *args, ** kwargs):
 
@@ -169,7 +177,7 @@ class ThreadWriteView(View, MemberChecker):
         if not self.member_check(request, thread_no):
             return redirect(reverse('WGB:top'))
 
-        form = forms.ThreadWriteForm(request.POST)
+        form = forms.ThreadWriteForm(request.POST, request.FILES)
         if not form.is_valid():
             return render(request, 'thread.html',
                           {
@@ -178,15 +186,29 @@ class ThreadWriteView(View, MemberChecker):
                           })
 
         write = form.save()
-        escape_sentence = html.escape(write.sentence)
-        cd = CharacterDecoration()
-        decorate_sentence = cd.decorate(escape_sentence)
-        write.sentence = decorate_sentence
+        # 文字装飾
+        write.sentence = self.decorate(write.sentence)
         write.save()
 
         # 添付ファイルの保存
+        attach1 = form.cleaned_data['attachment1']
+        if attach1:
+            self.create_attach(write, 1, attach1)
+        attach2 = form.cleaned_data['attachment2']
+        if attach2:
+            self.create_attach(write, 2, attach2)
+        attach3 = form.cleaned_data['attachment3']
+        if attach3:
+            self.create_attach(write, 3, attach3)
 
         return redirect(reverse('WGB:show_thread', args=[thread_no]))
+
+    def create_attach(self, write, seq, attachment):
+        attach = models.ThreadWriteAttachment()
+        attach.thread_write = write
+        attach.sequence = seq
+        attach.attachment = attachment
+        attach.save()
 
 
 write_thread = ThreadWriteView.as_view()
@@ -281,24 +303,38 @@ class SendMessageView(View, MemberChecker):
 send_message = SendMessageView.as_view()
 
 
-class ExecuteSendMessageView(View):
+class ExecuteSendMessageView(View, MessageWriter):
     """メッセージ送信実行"""
     def post(self, request, *args, **kwargs):
-        form = forms.DirectMessageForm(request.POST)
+        form = forms.DirectMessageForm(request.POST, request.FILES)
         if not form.is_valid():
             return render(request, 'send_message.html', {'form': form, })
 
         message = form.save()
-        escape_message = html.escape(form.cleaned_data['message'])
-        cd = CharacterDecoration()
-        decorate_message = cd.decorate(escape_message)
-        message.message = decorate_message
+        # 文字装飾
+        message.message = self.decorate(form.cleaned_data['message'])
         message.save()
 
         # 添付ファイルの保存
+        attach1 = form.cleaned_data['attachment1']
+        if attach1:
+            self.create_attach(message, 1, attach1)
+        attach2 = form.cleaned_data['attachment2']
+        if attach2:
+            self.create_attach(message, 2, attach2)
+        attach3 = form.cleaned_data['attachment3']
+        if attach3:
+            self.create_attach(message, 3, attach3)
 
         member = form.cleaned_data['to_member']
         return redirect(reverse('WGB:show_sender_list', args=[member.thread.thread_no, member.id]))
+
+    def create_attach(self, message, seq, attachment):
+        attach = models.DirectMessageAttachment()
+        attach.message = message
+        attach.sequence = seq
+        attach.attachment = attachment
+        attach.save()
 
 
 exe_send_message = ExecuteSendMessageView.as_view()

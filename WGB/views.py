@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.http import HttpResponse
 from django.views import View
 from django.views.generic import list
 from django.views.generic import edit
@@ -14,6 +15,7 @@ from .character_decoration import CharacterDecoration
 
 import hashlib
 import html
+import json
 
 
 class MemberChecker:
@@ -361,3 +363,36 @@ class ShowMessageView(View, MemberChecker):
 
 show_message = ShowMessageView.as_view()
 
+
+class AjaxGetThreadWrite(View):
+    def get(self, request):
+        thread_no = request.GET['thread_no']
+        number = request.GET['number']
+        write = models.ThreadWrite.objects.get(thread=thread_no, number=number)
+
+        # 参考： https://syncer.jp/jquery-modal-window
+        html = "<div id=\"modal-content\">" \
+               "<div class =\"card\">" \
+               "<div class=\"card-body\">" \
+               "<div class=\"card-title\" style=\"font-size:80%;\">" \
+               "                <span>{0}.{1}</span>"\
+               "                <span style=\"font-size:80%; position:relative; left:20px;\">{2}</span>"\
+               "</div>" \
+               "<div class=\"card-text py-2\" style=\"padding:10px;\">{3}</div>" \
+               "</div></div></div>" \
+               .format(write.number,
+                       write.member.member.display_name(),
+                       "{0}年{1}月{2}日{3}:{4}".format(write.write_datetime.year,
+                                                    write.write_datetime.month,
+                                                    write.write_datetime.day,
+                                                    write.write_datetime.hour,
+                                                    write.write_datetime.minute),
+                       write.sentence)  # 改行とURL変換を自前でやる・・・
+
+        data_dic = {'data': html}
+        data = json.dumps(data_dic)
+
+        return HttpResponse(data)
+
+
+ajax_get_thread_write = AjaxGetThreadWrite.as_view()

@@ -1,4 +1,17 @@
 {% extends "base.html" %}
+{% block script %}
+{% load static %}
+<script src="{% static 'js/wgb.js' %}"></script>
+<script src="{% static 'jquery/jquery.selection.js' %}"></script>
+<script src="{% static 'colorpicker/spectrum.js' %}"></script>
+<link rel="stylesheet" href="{% static 'colorpicker/spectrum.css' %}" />
+<link rel="stylesheet" href="{% static 'css/modal-window.css' %}" />
+<script>
+    function showAnchorWindow(number) {
+        createAnchorWindow("{% url 'WGB:ajax_get_thread_write' %}", {{thread.thread_no}}, number);
+    }
+</script>
+{% endblock %}
 {% block content %}
 {% load custom_tags %}
 <div class="row">
@@ -16,6 +29,9 @@
                     <div class="card-title" style="font-size:80%;">
                         <span>{{write.number}}.&nbsp;{{write.member.member.display_name}}さん</span>
                         <span style="font-size:80%; position:relative; left:20px;">{{write.write_datetime}}</span>
+                        {% if user.is_authenticated and write.member.member == user %}
+                        <span style="position:relative; left:20px;"><a href="#" style="color:#aaaaaa;">削除する</a></span>
+                        {% endif %}
                     </div>
                     {% if write.threadwriteattachment_set.all %}
                     <div class="card-text py-2" style="padding:10px;">
@@ -32,7 +48,7 @@
         {% if user.is_authenticated %}
             {% if thread.open_level == 1 and not thread.threadmember_set|find_member_self:user %}
             {# 閲覧のみ掲示板で、ログインしており、参加していない場合、参加フォーム  #}
-            <div class="w-75 mx-auto">
+            <div class="mx-auto">
                 <form action="{% url 'WGB:join_member' %}" method="post">
                     {% csrf_token %}
                     <div class="card">
@@ -46,13 +62,21 @@
             </div>
             {% else %}
             {# 書き込みフォーム  #}
-            <div class="w-75 mx-auto">
-                <form action="{% url 'WGB:write_thread' thread.thread_no %}" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="card-title">書き込みフォーム</div>
-                            <div class="card-subtitle"><span class="text-danger">{{ form.non_field_errors }}</span></div>
+            <div class="mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">書き込みフォーム</div>
+                        <div class="card-subtitle"><span class="text-danger">{{ form.non_field_errors }}</span></div>
+                        <div>  {# 文字装飾ボタン #}
+                            <button onclick="add_decorate_tag('%b')"><span style="font-size:large" >あ</span></button>
+                            <button onclick="add_decorate_tag('%s')"><span style="font-size:x-small">あ</span></button>
+                            <button onclick="add_decorate_tag('%bl')"><span style="font-style:bold">あ</span></button>
+                            <button onclick="add_decorate_tag('%st')"><span style="text-decoration: line-through">あ</span></button>
+                            <button onclick="add_decorate_tag('%c')"><span id="id_color" style="color:red">あ</span></button>
+                            <input type='text' id="colorpicker" value="red"/>
+                        </div>
+                        <form action="{% url 'WGB:write_thread' thread.thread_no %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
                             <div class="py-2">{{form.sentence}}{{form.sentence.errors}}</div>
                             {# 添付ファイル #}
                             <div class="py-2">{{form.attachment1.label}}{{form.attachment1}}{{form.attachment1.errors}}</div>
@@ -62,9 +86,9 @@
                             <input type="hidden" name="thread" value="{{thread.thread_no}}"/>
                             <input type="hidden" name="number" value="{{thread.threadwrite_set.latest.next_number}}"/>
                             <input type="hidden" name="member" value="{{thread.threadmember_set|find_member_self:user}}"/>
-                        </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
             {% endif %}
         {% endif %}
@@ -86,5 +110,31 @@
             </div>
         </div>
     </div>
+</div>
+<script>
+$("#colorpicker").spectrum({
+    preferredFormat: "name",
+    color: "red",
+    showPalette: true,
+    showSelectionPalette: true,
+    palette: [
+        ['black', 'white', 'blanchedalmond'],
+        ['red', 'yellow', 'green', 'blue', 'violet']
+    ],
+    showInitial: true,
+    showInput: true,
+    chooseText: "決定",
+    cancelText: "キャンセル",
+});
+
+$(".sp-choose").on("click", function() {
+        var color = $('#colorpicker').val();
+        $('#id_color').css('color', color);
+    }
+);
+</script>
+{% endblock %}
+{% block modal %}
+<div id="show_anchor" style="display:none;">
 </div>
 {% endblock %}

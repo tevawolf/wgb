@@ -20,4 +20,5 @@ urlpatterns = [
     path('send_message/thread<int:thread_no>/member<int:member_id>', views.send_message, name='send_message'),
     path('exe_send_message/', views.exe_send_message, name='exe_send_message'),
     path('show_message/<int:message_id>/<int:member_object_id>', views.show_message, name='show_message'),
+    path('ajax_get_thread_write/', views.ajax_get_thread_write, name='ajax_get_thread_write'),
 ]

@@ -5,7 +5,6 @@
 <script src="{% static 'jquery/jquery.selection.js' %}"></script>
 <script src="{% static 'colorpicker/spectrum.js' %}"></script>
 <link rel="stylesheet" href="{% static 'colorpicker/spectrum.css' %}" />
-<link rel="stylesheet" href="{% static 'css/modal-window.css' %}" />
 <script>
     function showAnchorWindow(number) {
         createAnchorWindow("{% url 'WGB:ajax_get_thread_write' %}", {{thread.thread_no}}, number);
@@ -24,7 +23,7 @@
                 </div>
             </div>
             {% for write in thread.threadwrite_set.all %}
-            <div class="card">
+            <div class="card member{{write.member.member.id}}">
                 <div class="card-body">
                     <div class="card-title" style="font-size:80%;">
                         <span>{{write.number}}.&nbsp;{{write.member.member.display_name}}さん</span>
@@ -105,6 +104,8 @@
                 {% else %}
                     <span>{{member.member.display_name}}さん</span>
                 {% endif %}
+                    &nbsp;
+                    <input type="checkbox" class="filter_member" onclick="filtering({{member.member.id}});"/>フィルタ
                 </li>
                 {% endfor %}
             </div>
@@ -135,6 +136,6 @@ $(".sp-choose").on("click", function() {
 </script>
 {% endblock %}
 {% block modal %}
-<div id="show_anchor" style="display:none;">
+<div id="show_anchor">
 </div>
 {% endblock %}

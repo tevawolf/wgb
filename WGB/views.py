@@ -370,16 +370,14 @@ class AjaxGetThreadWrite(View):
         number = request.GET['number']
         write = models.ThreadWrite.objects.get(thread=thread_no, number=number)
 
-        # 参考： https://syncer.jp/jquery-modal-window
-        html = "<div id=\"modal-content\">" \
-               "<div class =\"card\">" \
+        html = "<div class =\"card\">" \
                "<div class=\"card-body\">" \
                "<div class=\"card-title\" style=\"font-size:80%;\">" \
                "                <span>{0}.{1}</span>"\
                "                <span style=\"font-size:80%; position:relative; left:20px;\">{2}</span>"\
                "</div>" \
                "<div class=\"card-text py-2\" style=\"padding:10px;\">{3}</div>" \
-               "</div></div></div>" \
+               "</div></div>" \
                .format(write.number,
                        write.member.member.display_name(),
                        "{0}年{1}月{2}日{3}:{4}".format(write.write_datetime.year,

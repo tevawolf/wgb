@@ -32,17 +32,14 @@ function createAnchorWindow(url, thread_no, number) {
 }
 
 // フィルタリング
-function filtering(id) {
+function filtering() {
     // チェックした人だけ表示（複数選択可能）にしたい！！！
-    checked_list = $('[class=filter_member]');
-    alert(checked_list)
-
-    for(var chk in checked_list) {
-        alert(chk.prop('checked'));
-    }
-    if (checked) {
-        $("[class^='card member']").not("[class$='" + id + "']").css('display', 'None');
-    } else {
-        $("[class^='card member']").not("[class$='" + id + "']").css('display', 'block');
-    }
+    $('[class=filter_member]:checked').each(function() {
+        var member_id = $(this).val();
+        $("[class='card member" + member_id + "']").fadeIn(200);
+    });
+    $(':not([class=filter_member]:checked)').each(function() {
+        var member_id = $(this).val();
+        $("[class='card member" + member_id + "']").fadeOut(200);
+    });
 }

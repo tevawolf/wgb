@@ -105,7 +105,8 @@
                     <span>{{member.member.display_name}}さん</span>
                 {% endif %}
                     &nbsp;
-                    <input type="checkbox" class="filter_member" onclick="filtering({{member.member.id}});"/>フィルタ
+                    <input type="checkbox" id="filter{{member.member.id}}" class="filter_member" value="{{member.member.id}}"
+                           onclick="filtering();" checked/>&nbsp;<label for="filter{{member.member.id}}">表示</label>
                 </li>
                 {% endfor %}
             </div>

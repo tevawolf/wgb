@@ -53,6 +53,8 @@ class Threads(models.Model):
     def display_create_user(self):
         return self.threadmember_set.get(create=True).member.display_name()
 
+    def display_create_user_icon(self):
+        return self.threadmember_set.get(create=True).member.icon.url
 
 class ThreadMember(models.Model):
     class Meta:

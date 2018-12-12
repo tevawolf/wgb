@@ -1,12 +1,12 @@
 // 文字装飾付加（アンカーをリンクにするのもここで）
-function add_decorate_tag(tag) {
+function add_decorate_tag(tag, selector) {
     if (tag == '%c') {
         var color = $('#colorpicker').val();
-        $('#id_sentence').selection('insert', { text: '[' + color + ']' + tag, mode: 'before' });
+        $('#id_' + selector).selection('insert', { text: '[' + color + ']' + tag, mode: 'before' });
     } else {
-        $('#id_sentence').selection('insert', { text: tag, mode: 'before' });
+        $('#id_' + selector).selection('insert', { text: tag, mode: 'before' });
     }
-    $('#id_sentence').selection('insert', { text: tag, mode: 'after' });
+    $('#id_' + selector).selection('insert', { text: tag, mode: 'after' });
 }
 
 // アンカークリック　ウインドウ表示

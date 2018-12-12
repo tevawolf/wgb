@@ -39,14 +39,6 @@ class CreateUserForm(forms.ModelForm):
         self.fields['icon'].label = 'アイコン画像(任意)'
         self.fields['icon'].required = False
 
-    def clean_nickname(self):
-        name = self.cleaned_data['nickname']
-        return name
-
-    def clean_icon(self):
-        icon = self.cleaned_data['icon']
-        return icon
-
     def clean(self):
         super(CreateUserForm, self).clean()
         password = self.cleaned_data['password']
@@ -75,6 +67,13 @@ class CreateThreadForm(forms.ModelForm):
         max_length=5000,
         widget=forms.Textarea(attrs={'rows': 4, 'cols': 40})
     )
+
+    attachment1 = forms.ImageField(label='画像添付１', required=False,
+                                   validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
+    attachment2 = forms.ImageField(label='画像添付２', required=False,
+                                   validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
+    attachment3 = forms.ImageField(label='画像添付３', required=False,
+                                   validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

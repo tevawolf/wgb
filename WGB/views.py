@@ -93,7 +93,7 @@ create_user = CreateUserView.as_view()
 class ExecuteCreateUserView(View):
     """ユーザー登録実行"""
     def post(self, request, *args, **kwargs):
-        form = forms.CreateUserForm(request.POST)
+        form = forms.CreateUserForm(request.POST, request.FILES)
         if not form.is_valid():
             return render(request, 'create_user.html', {'form': form})
 
@@ -101,6 +101,7 @@ class ExecuteCreateUserView(View):
         # パスワードは改めてUserオブジェクトにセットしてセーブしないと暗号化されない
         # (変な仕様・・・)
         user.set_password(form.cleaned_data['password'])
+        user.icon = form.cleaned_data['icon']
         user.save()
         return redirect(reverse('WGB:top'))
 
@@ -120,7 +121,7 @@ create_thread = CreateThreadView.as_view()
 class ExecuteCreateThreadView(View, MessageWriter):
     """掲示板作成実行"""
     def post(self, request, *args, **kwargs):
-        form = forms.CreateThreadForm(request.POST)
+        form = forms.CreateThreadForm(request.POST, request.FILES)
         if not form.is_valid():
             return render(request, 'create_thread.html', {'form': form})
 
@@ -144,9 +145,25 @@ class ExecuteCreateThreadView(View, MessageWriter):
         # 文字装飾
         write.sentence = self.decorate(form.cleaned_data['first_write'])
         write.save()
-        # 画像添付
+        # 添付ファイルの保存
+        attach1 = form.cleaned_data['attachment1']
+        if attach1:
+            self.create_attach(write, 1, attach1)
+        attach2 = form.cleaned_data['attachment2']
+        if attach2:
+            self.create_attach(write, 2, attach2)
+        attach3 = form.cleaned_data['attachment3']
+        if attach3:
+            self.create_attach(write, 3, attach3)
 
         return redirect(reverse('WGB:top'))
+
+    def create_attach(self, write, seq, attachment):
+        attach = models.ThreadWriteAttachment()
+        attach.thread_write = write
+        attach.sequence = seq
+        attach.attachment = attachment
+        attach.save()
 
 
 execute_create_thread = ExecuteCreateThreadView.as_view()

@@ -19,13 +19,18 @@
             <div class="card bg-primary text-light">
                 <div class="card-body">
                     <div class="card-title">掲示板No.{{thread.thread_no}}.&nbsp;{{thread.thread_title}}</div>
-                    <div class="card-subtitle" style="display:block; text-align:right;">作成者：{{thread.threadmember_set|find_create_user}}さん</div>
+                    <div class="card-subtitle" style="display:block; text-align:right;">
+                        作成者：
+                        <img src="{{ thread.threadmember_set|find_create_user_icon }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;">
+                        {{thread.threadmember_set|find_create_user}}さん
+                    </div>
                 </div>
             </div>
             {% for write in thread.threadwrite_set.all %}
             <div class="card member{{write.member.member.id}}">
                 <div class="card-body">
                     <div class="card-title" style="font-size:80%;">
+                        <img src="{{ write.member.member.icon.url }}" style="width:80px; height:80px; border:solid 1px #ffffff; border-radius: 10px;">
                         <span>{{write.number}}.&nbsp;{{write.member.member.display_name}}さん</span>
                         <span style="font-size:80%; position:relative; left:20px;">{{write.write_datetime}}</span>
                         {% if user.is_authenticated and write.member.member == user %}
@@ -67,11 +72,11 @@
                         <div class="card-title">書き込みフォーム</div>
                         <div class="card-subtitle"><span class="text-danger">{{ form.non_field_errors }}</span></div>
                         <div>  {# 文字装飾ボタン #}
-                            <button onclick="add_decorate_tag('%b')"><span style="font-size:large" >あ</span></button>
-                            <button onclick="add_decorate_tag('%s')"><span style="font-size:x-small">あ</span></button>
-                            <button onclick="add_decorate_tag('%bl')"><span style="font-style:bold">あ</span></button>
-                            <button onclick="add_decorate_tag('%st')"><span style="text-decoration: line-through">あ</span></button>
-                            <button onclick="add_decorate_tag('%c')"><span id="id_color" style="color:red">あ</span></button>
+                            <button type="button" onclick="add_decorate_tag('%b, 'sentence')"><span style="font-size:large" >あ</span></button>
+                            <button type="button" onclick="add_decorate_tag('%s', 'sentence')"><span style="font-size:x-small">あ</span></button>
+                            <button type="button" onclick="add_decorate_tag('%bl', 'sentence')"><span style="font-style:bold">あ</span></button>
+                            <button type="button" onclick="add_decorate_tag('%st', 'sentence')"><span style="text-decoration: line-through">あ</span></button>
+                            <button type="button" onclick="add_decorate_tag('%c', 'sentence')"><span id="id_color" style="color:red">あ</span></button>
                             <input type='text' id="colorpicker" value="red"/>
                         </div>
                         <form action="{% url 'WGB:write_thread' thread.thread_no %}" method="post" enctype="multipart/form-data">
@@ -102,7 +107,10 @@
                 {% if user.is_authenticated and thread.open_level == 1 and thread.threadmember_set|find_member_self:user and not member.member == user %}
                     <a href="{% url 'WGB:show_sender_list' thread.thread_no member.id %}">{{member.member.display_name}}さん</a>
                 {% else %}
-                    <span>{{member.member.display_name}}さん</span>
+                    <span>
+                        <img src="{{ member.member.icon.url }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;">
+                        {{member.member.display_name}}さん
+                    </span>
                 {% endif %}
                     &nbsp;
                     <input type="checkbox" id="filter{{member.member.id}}" class="filter_member" value="{{member.member.id}}"
@@ -113,28 +121,7 @@
         </div>
     </div>
 </div>
-<script>
-$("#colorpicker").spectrum({
-    preferredFormat: "name",
-    color: "red",
-    showPalette: true,
-    showSelectionPalette: true,
-    palette: [
-        ['black', 'white', 'blanchedalmond'],
-        ['red', 'yellow', 'green', 'blue', 'violet']
-    ],
-    showInitial: true,
-    showInput: true,
-    chooseText: "決定",
-    cancelText: "キャンセル",
-});
-
-$(".sp-choose").on("click", function() {
-        var color = $('#colorpicker').val();
-        $('#id_color').css('color', color);
-    }
-);
-</script>
+<script src="{% static 'js/wgb_spectrum.js'%}"></script>
 {% endblock %}
 {% block modal %}
 <div id="show_anchor">

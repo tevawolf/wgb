@@ -10,7 +10,7 @@ DATABASES = {
         'OPTIONS': {
           'autocommit': False,
         },
-        'HOST': '192.168.20.42',
+        # 'HOST': '192.168.20.42',
     }
 }
 

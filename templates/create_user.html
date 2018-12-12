@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div>
-    <form action="{% url 'WGB:exe_create_user' %}" method="post">
+    <form action="{% url 'WGB:exe_create_user' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="col-md-8 offset-md-2">
             <div class="card">

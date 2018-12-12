@@ -12,6 +12,14 @@ def find_create_user(member):
 
 
 @register.filter
+def find_create_user_icon(member):
+    if member.filter(create=True).exists():
+        return member.get(create=True).member.icon.url
+    else:
+        return ''
+
+
+@register.filter
 def find_member_self(member, user):
     if user.is_authenticated and \
             member.filter(member_id=user).exists():

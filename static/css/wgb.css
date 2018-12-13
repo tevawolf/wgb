@@ -1,4 +1,9 @@
 [class^="card member"] {
   opacity:  1;
-  transition: 0.25s;
+  transition: 0.5s;
+  -webkit-transition: 0.5s;
+}
+
+a[class="back-blue"] {
+    color:orange;
 }

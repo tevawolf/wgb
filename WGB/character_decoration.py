@@ -10,6 +10,7 @@ class CharacterDecoration:
     COLOR = '%c'
     REGEX = r'.*?'
     ANCHOR = r'&gt;&gt;[0-9]*'
+    URL = r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+'
 
     def decorate(self, text):
         text = self.decorate_bold(text)
@@ -73,7 +74,14 @@ class CharacterDecoration:
         iterator = re.finditer(self.ANCHOR, text)
         for match in iterator:
             number = match.group().replace('&gt;&gt;', '')
-            t = '<a onclick=\"showAnchorWindow({});\">'.format(number) + match.group() + '</a>'
+            t = '<a href="javascript:void(0);" onclick=\"showAnchorWindow({});\">'.format(number) + match.group() + '</a>'
+            text = text.replace(match.group(), t, 1)
+        return text
+
+    def decorate_url(self, text):
+        iterator = re.finditer(self.URL, text)
+        for match in iterator:
+            t = '<a href="{0}" target="_blank">'.format(match.group()) + match.group() + '</a>'
             text = text.replace(match.group(), t, 1)
         return text
 

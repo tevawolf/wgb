@@ -24,6 +24,7 @@
                         <img src="{{ thread.threadmember_set|find_create_user_icon }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;">
                         {{thread.threadmember_set|find_create_user}}さん
                     </div>
+                    <div class="card-text"><a href="{% url 'WGB:top' %}" class="back-blue">掲示板一覧に戻る</a></div>
                 </div>
             </div>
             {% for write in thread.threadwrite_set.all %}
@@ -72,11 +73,11 @@
                         <div class="card-title">書き込みフォーム</div>
                         <div class="card-subtitle"><span class="text-danger">{{ form.non_field_errors }}</span></div>
                         <div>  {# 文字装飾ボタン #}
-                            <button type="button" onclick="add_decorate_tag('%b, 'sentence')"><span style="font-size:large" >あ</span></button>
-                            <button type="button" onclick="add_decorate_tag('%s', 'sentence')"><span style="font-size:x-small">あ</span></button>
-                            <button type="button" onclick="add_decorate_tag('%bl', 'sentence')"><span style="font-style:bold">あ</span></button>
-                            <button type="button" onclick="add_decorate_tag('%st', 'sentence')"><span style="text-decoration: line-through">あ</span></button>
-                            <button type="button" onclick="add_decorate_tag('%c', 'sentence')"><span id="id_color" style="color:red">あ</span></button>
+                            <button type="button" onclick="add_decorate_tag('%b, 'sentence')" title="大きい文字"><span style="font-size:large;" >あ</span></button>
+                            <button type="button" onclick="add_decorate_tag('%s', 'sentence')" title="小さい文字"><span style="font-size:x-small;">あ</span></button>
+                            <button type="button" onclick="add_decorate_tag('%bl', 'sentence')" title="太い文字"><span style="font-weight:bold;">あ</span></button>
+                            <button type="button" onclick="add_decorate_tag('%st', 'sentence')" title="取り消し線"><span style="text-decoration: line-through;">あ</span></button>
+                            <button type="button" onclick="add_decorate_tag('%c', 'sentence')" title="文字色（右のボタンで色を選択）"><span id="id_color" style="color:red;">あ</span></button>
                             <input type='text' id="colorpicker" value="red"/>
                         </div>
                         <form action="{% url 'WGB:write_thread' thread.thread_no %}" method="post" enctype="multipart/form-data">
@@ -91,6 +92,7 @@
                             <input type="hidden" name="number" value="{{thread.threadwrite_set.latest.next_number}}"/>
                             <input type="hidden" name="member" value="{{thread.threadmember_set|find_member_self:user}}"/>
                         </form>
+                        <div class="card-text"><a href="{% url 'WGB:top' %}">掲示板一覧に戻る</a></div>
                     </div>
                 </div>
             </div>
@@ -100,25 +102,27 @@
     <div class="col-md-4">
         <div class="card  bg-primary text-light">
             <div class="card-body">
-                <div>参加メンバー</div>
-                {% for member in thread.threadmember_set.all %}
-                <li>
-                {# 自分が参加している場合だけリンク表示→メッセージ使用可能 #}
-                {% if user.is_authenticated and thread.open_level == 1 and thread.threadmember_set|find_member_self:user and not member.member == user %}
-                    <a href="{% url 'WGB:show_sender_list' thread.thread_no member.id %}">{{member.member.display_name}}さん</a>
-                {% else %}
-                    <span>
-                        <img src="{{ member.member.icon.url }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;">
-                        {{member.member.display_name}}さん
-                    </span>
-                {% endif %}
-                    &nbsp;
-                    <input type="checkbox" id="filter{{member.member.id}}" class="filter_member" value="{{member.member.id}}"
-                           onclick="filtering();" checked/>&nbsp;<label for="filter{{member.member.id}}">表示</label>
-                </li>
-                {% endfor %}
+                <div class="card-title">参加メンバー（クリックで表示／非表示切り替え）</div>
             </div>
         </div>
+        {% for member in thread.threadmember_set.all %}
+        <div class="card  bg-primary text-light" id="filter_second_div{{member.member.id}}" onclick="filtering_second({{member.member.id}});">
+            <div class="card-body">
+                {# 自分が参加している場合だけリンク表示→メッセージ使用可能 #}
+                {% if user.is_authenticated and thread.open_level == 1 and thread.threadmember_set|find_member_self:user and not member.member == user %}
+                <a href="{% url 'WGB:show_sender_list' thread.thread_no member.id %}">{{member.member.display_name}}さん</a>
+                {% else %}
+                <span style="user-select:none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;">
+                    <img src="{{ member.member.icon.url }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;">
+                    {{member.member.display_name}}さん
+                </span>
+                {% endif %}
+                <!--<input type="checkbox" id="filter{{member.member.id}}" class="filter_member" value="{{member.member.id}}"-->
+                       <!--onclick="filtering();" checked/>&nbsp;<label for="filter{{member.member.id}}">表示</label>-->
+                <input type="hidden" id="filter_second{{member.member.id}}" class="filter_second_member" value="true">
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
 <script src="{% static 'js/wgb_spectrum.js'%}"></script>

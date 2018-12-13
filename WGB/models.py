@@ -56,6 +56,7 @@ class Threads(models.Model):
     def display_create_user_icon(self):
         return self.threadmember_set.get(create=True).member.icon.url
 
+
 class ThreadMember(models.Model):
     class Meta:
         verbose_name = '掲示板参加メンバー'

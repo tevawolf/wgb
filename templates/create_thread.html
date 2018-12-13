@@ -23,15 +23,15 @@
                     <div class="py-2">{{form.password}}{{form.password.error}}</div>
                     <div class="card-text py-2">{{form.password2.label}}</div>
                     <div class="py-2">{{form.password2}}{{form.password2.error}}</div>
+                    <div class="card-text py-2">{{form.first_write.label}}</div>
                     <div>  {# 文字装飾ボタン #}
-                        <button type="button" onclick="add_decorate_tag('%b', 'first_write')"><span style="font-size:large" >あ</span></button>
-                        <button type="button" onclick="add_decorate_tag('%s', 'first_write')"><span style="font-size:x-small">あ</span></button>
-                        <button type="button" onclick="add_decorate_tag('%bl', 'first_write')"><span style="font-style:bold">あ</span></button>
-                        <button type="button" onclick="add_decorate_tag('%st', 'first_write')"><span style="text-decoration: line-through">あ</span></button>
-                        <button type="button" onclick="add_decorate_tag('%c', 'first_write')"><span id="id_color" style="color:red">あ</span></button>
+                        <button type="button" onclick="add_decorate_tag('%b, 'first_write')" title="大きい文字"><span style="font-size:large;" >あ</span></button>
+                        <button type="button" onclick="add_decorate_tag('%s', 'first_write')" title="小さい文字"><span style="font-size:x-small;">あ</span></button>
+                        <button type="button" onclick="add_decorate_tag('%bl', 'first_write')" title="太い文字"><span style="font-weight:bold;">あ</span></button>
+                        <button type="button" onclick="add_decorate_tag('%st', 'first_write')" title="取り消し線"><span style="text-decoration: line-through;">あ</span></button>
+                        <button type="button" onclick="add_decorate_tag('%c', 'first_write')" title="文字色（右のボタンで色を選択）"><span id="id_color" style="color:red;">あ</span></button>
                         <input type='text' id="colorpicker" value="red"/>
                     </div>
-                    <div class="card-text py-2">{{form.first_write.label}}</div>
                     <div class="py-2">{{form.first_write}}{{form.first_write.error}}</div>
                     {# 添付ファイル #}
                     <div class="py-2">{{form.attachment1.label}}{{form.attachment1}}{{form.attachment1.errors}}</div>

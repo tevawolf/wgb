@@ -1,3 +1,8 @@
+// 外部リンクは別ウインドウで開く
+$(function() {
+  $('a[href^=http]').attr('target', '_blank');
+});
+
 // 文字装飾付加（アンカーをリンクにするのもここで）
 function add_decorate_tag(tag, selector) {
     if (tag == '%c') {
@@ -32,6 +37,39 @@ function createAnchorWindow(url, thread_no, number) {
 }
 
 // フィルタリング
+function filtering_second(member_id) {
+    var val = $("#filter_second" + member_id).val();
+    var visible;
+    if(val == "true") {
+        $("#filter_second_div" + member_id).addClass("bg-secondary");
+        $("#filter_second_div" + member_id).removeClass("bg-primary");
+        $("#filter_second" + member_id).val("false");
+    } else {
+        $("#filter_second_div" + member_id).addClass("bg-primary");
+        $("#filter_second_div" + member_id).removeClass("bg-secondary");
+        $("#filter_second" + member_id).val("true");
+    }
+
+    var length = $('.filter_second_member').length
+    if (length == 1) {
+        var visible = $("#filter_second" + member_id).val();
+        if (visible == "true") {
+                $("[class='card member" + member_id + "']").css('display', 'block');
+        } else {
+                $("[class='card member" + member_id + "']").css('display', 'none');
+        }
+    } else {
+        $('.filter_second_member').each(function() {
+            var visible = $(this).val();
+            if (visible == "true") {
+                $("[class='card member" + member_id + "']").fadeIn('fast');
+            } else {
+                $("[class='card member" + member_id + "']").fadeOut('fast');
+            }
+        });
+    }
+}
+
 function filtering() {
     // チェックした人だけ表示（複数選択可能）にしたい！！！
     $('[class=filter_member]:checked').each(function() {

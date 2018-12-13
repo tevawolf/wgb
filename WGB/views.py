@@ -381,7 +381,7 @@ class ShowMessageView(View, MemberChecker):
 show_message = ShowMessageView.as_view()
 
 
-class AjaxGetThreadWrite(View):
+class AjaxGetThreadWrite(View, MessageWriter):
     def get(self, request):
         thread_no = request.GET['thread_no']
         number = request.GET['number']
@@ -390,19 +390,27 @@ class AjaxGetThreadWrite(View):
         html = "<div class =\"card\">" \
                "<div class=\"card-body\">" \
                "<div class=\"card-title\" style=\"font-size:80%;\">" \
-               "                <span>{0}.{1}</span>"\
-               "                <span style=\"font-size:80%; position:relative; left:20px;\">{2}</span>"\
+               "    <img src=\"{0}\" style=\"width:80px; height:80px; border:solid 1px #ffffff; border-radius: 10px;\">" \
+               "                <span>{1}.{2}</span>"\
+               "                <span style=\"font-size:80%; position:relative; left:20px;\">{3}</span>"\
                "</div>" \
-               "<div class=\"card-text py-2\" style=\"padding:10px;\">{3}</div>" \
-               "</div></div>" \
-               .format(write.number,
+               .format(write.member.member.icon.url,
+                       write.number,
                        write.member.member.display_name(),
                        "{0}年{1}月{2}日{3}:{4}".format(write.write_datetime.year,
                                                     write.write_datetime.month,
                                                     write.write_datetime.day,
                                                     write.write_datetime.hour,
                                                     write.write_datetime.minute),
-                       write.sentence)  # 改行とURL変換を自前でやる・・・
+                       )
+        attachments = write.threadwriteattachment_set.all()
+        for attach in attachments:
+            html += "<div class=\"card-text py-2\" style=\"padding:10px;\"><img src=\"{0}\" /></div>".format(attach.attachment.url)
+
+        sentence = write.sentence.replace('\n', '<br />')
+        sentence = CharacterDecoration().decorate_url(sentence)
+        html += "<div class=\"card-text py-2\" style=\"padding:10px;\">{0}</div>" \
+                "</div></div>".format(sentence)
 
         data_dic = {'data': html}
         data = json.dumps(data_dic)

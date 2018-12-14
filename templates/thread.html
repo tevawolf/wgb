@@ -6,8 +6,8 @@
 <script src="{% static 'colorpicker/spectrum.js' %}"></script>
 <link rel="stylesheet" href="{% static 'colorpicker/spectrum.css' %}" />
 <script>
-    function showAnchorWindow(number) {
-        createAnchorWindow("{% url 'WGB:ajax_get_thread_write' %}", {{thread.thread_no}}, number);
+    function showAnchorWindow(from_number, to_number) {
+        createAnchorWindow("{% url 'WGB:ajax_get_thread_write' %}", {{thread.thread_no}}, from_number, to_number);
     }
 </script>
 {% endblock %}

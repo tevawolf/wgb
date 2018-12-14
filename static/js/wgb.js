@@ -1,7 +1,9 @@
 // 外部リンクは別ウインドウで開く
 $(function() {
-  $('a[href^=http]').attr('target', '_blank');
+    $('a[href^=http]').attr('target', '_blank');
 });
+
+
 
 // 文字装飾付加（アンカーをリンクにするのもここで）
 function add_decorate_tag(tag, selector) {
@@ -15,11 +17,17 @@ function add_decorate_tag(tag, selector) {
 }
 
 // アンカークリック　ウインドウ表示
-function createAnchorWindow(url, thread_no, number) {
+function createAnchorWindow(url, thread_no, from_number, to_number) {
+    // すでにポップアップが開いていたら、閉じる
+    if($(".ui-dialog").length && $(".ui-dialog").css('display') != 'none') {
+        $('.ui-dialog').fadeOut('fast');
+        return;
+    }
+
     // Ajax実行
     $.get(
         url,
-        {'thread_no': thread_no, 'number': number}
+        {'thread_no': thread_no, 'number': to_number}
         )
     .done(function (data) {
         // 実行後処理
@@ -29,9 +37,18 @@ function createAnchorWindow(url, thread_no, number) {
 
         $("#show_anchor").dialog({
             modal: false,
-            title: "アンカーポップアップ",
+            title: json.title,
             show: 250,
             hide: 250,
+            position: {my: "left top", at: "left top", of: "#anchor_from_" + from_number + '_to_' + to_number},
+        });
+        $(".ui-dialog-titlebar-close").hide();
+        $('.ui-dialog').fadeIn('fast');
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.ui-dialog').length) {
+                $('.ui-dialog').fadeOut('fast');
+            }
         });
     });
 }

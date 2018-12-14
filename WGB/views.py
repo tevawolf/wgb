@@ -206,7 +206,7 @@ class ThreadWriteView(View, MemberChecker, MessageWriter):
 
         write = form.save()
         # 文字装飾
-        write.sentence = self.decorate(write.sentence)
+        write.sentence = self.decorate(write.sentence, write.number)
         write.save()
 
         # 添付ファイルの保存
@@ -412,7 +412,7 @@ class AjaxGetThreadWrite(View, MessageWriter):
         html += "<div class=\"card-text py-2\" style=\"padding:10px;\">{0}</div>" \
                 "</div></div>".format(sentence)
 
-        data_dic = {'data': html}
+        data_dic = {'data': html, 'title': str(write.number) + '.' + write.member.member.display_name()}
         data = json.dumps(data_dic)
 
         return HttpResponse(data)

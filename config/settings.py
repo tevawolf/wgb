@@ -88,7 +88,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
@@ -135,3 +134,12 @@ MEDIA_ROOT = 'var/www/{}/upload'.format(PROJECT_NAME)
 LOGIN_URL = 'wgb/'
 LOGIN_REDIRECT_URL = 'wgb/'
 AUTH_USER_MODEL = 'WGB.UserAccount'
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
+
+if not DEBUG:
+    import django_heroku
+    django_heroku.settings(locals())

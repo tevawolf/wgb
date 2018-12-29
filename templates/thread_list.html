@@ -21,7 +21,7 @@
                     <td class="col-md-3">{{thread.thread_title}}</td>
                     {% endif %}
                     <td class="col-md-2" style="font-size:80%;">{{thread.display_open_level|safe}}</td>
-                    <td class="col-md-2">{{thread.display_create_user}}</td>
+                    <td class="col-md-2"><img src="{{ thread.display_create_user_icon }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;">{{thread.display_create_user}}</td>
                     <td class="col-md-2" style="font-size:70%;">{{thread.create_date}}</td>
                     <td class="col-md-2">
                     {# ログインしており、メンバーでなければボタン表示 #}

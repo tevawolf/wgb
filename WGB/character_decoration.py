@@ -10,14 +10,16 @@ class CharacterDecoration:
     COLOR = '%c'
     REGEX = r'.*?'
     ANCHOR = r'&gt;&gt;[0-9]*'
+    URL = r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+'
 
-    def decorate(self, text):
+    def decorate(self, text, number=0):
         text = self.decorate_bold(text)
         text = self.decorate_strike(text)
         text = self.decorate_big(text)
         text = self.decorate_small(text)
         text = self.decorate_color(text)
-        text = self.decorate_anchor(text)
+        if number != 0:
+            text = self.decorate_anchor(text, number)
         return text
 
     def decorate_big(self, text):
@@ -69,11 +71,18 @@ class CharacterDecoration:
             text = text.replace(match.group(), t, 1)
         return text
 
-    def decorate_anchor(self, text):
+    def decorate_anchor(self, text, from_number):
         iterator = re.finditer(self.ANCHOR, text)
         for match in iterator:
-            number = match.group().replace('&gt;&gt;', '')
-            t = '<a onclick=\"showAnchorWindow({});\">'.format(number) + match.group() + '</a>'
+            to_number = match.group().replace('&gt;&gt;', '')
+            t = '<a id="anchor_from_{0}_to_{1}" href="javascript:void(0);" onclick=\"showAnchorWindow({0}, {1});\">'.format(from_number, to_number) + match.group() + '</a>'
+            text = text.replace(match.group(), t, 1)
+        return text
+
+    def decorate_url(self, text):
+        iterator = re.finditer(self.URL, text)
+        for match in iterator:
+            t = '<a href="{0}" target="_blank">'.format(match.group()) + match.group() + '</a>'
             text = text.replace(match.group(), t, 1)
         return text
 

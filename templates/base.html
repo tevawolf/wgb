@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>WorewolfGameBBS</title>
     {% load static %}
+    <link rel="stylesheet" href="{% static 'css/wgb.css' %}" />
+    <link rel="stylesheet" href="{% static 'jqueryui/css/jquery-ui.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'jqueryui/css/jquery-ui.structure.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'jqueryui/css/jquery-ui.theme.min.css' %}" />
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}" />
     <script src="{% static 'jquery/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'jqueryui/js/jquery-ui.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     {% block script %}{% endblock %}
 </head>
@@ -16,6 +21,7 @@
         <a class="navbar-brand" href="{% url 'WGB:top' %}">WorewolfGameBBS</a>
         <span>ようこそ&nbsp;
         {% if user.is_authenticated %}
+            <img src="{{ user.icon.url }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;">
             {{user.display_name}}
         {% else %}
             ゲスト

@@ -93,7 +93,7 @@ create_user = CreateUserView.as_view()
 class ExecuteCreateUserView(View):
     """ユーザー登録実行"""
     def post(self, request, *args, **kwargs):
-        form = forms.CreateUserForm(request.POST)
+        form = forms.CreateUserForm(request.POST, request.FILES)
         if not form.is_valid():
             return render(request, 'create_user.html', {'form': form})
 
@@ -101,6 +101,7 @@ class ExecuteCreateUserView(View):
         # パスワードは改めてUserオブジェクトにセットしてセーブしないと暗号化されない
         # (変な仕様・・・)
         user.set_password(form.cleaned_data['password'])
+        user.icon = form.cleaned_data['icon']
         user.save()
         return redirect(reverse('WGB:top'))
 
@@ -120,7 +121,7 @@ create_thread = CreateThreadView.as_view()
 class ExecuteCreateThreadView(View, MessageWriter):
     """掲示板作成実行"""
     def post(self, request, *args, **kwargs):
-        form = forms.CreateThreadForm(request.POST)
+        form = forms.CreateThreadForm(request.POST, request.FILES)
         if not form.is_valid():
             return render(request, 'create_thread.html', {'form': form})
 
@@ -144,9 +145,25 @@ class ExecuteCreateThreadView(View, MessageWriter):
         # 文字装飾
         write.sentence = self.decorate(form.cleaned_data['first_write'])
         write.save()
-        # 画像添付
+        # 添付ファイルの保存
+        attach1 = form.cleaned_data['attachment1']
+        if attach1:
+            self.create_attach(write, 1, attach1)
+        attach2 = form.cleaned_data['attachment2']
+        if attach2:
+            self.create_attach(write, 2, attach2)
+        attach3 = form.cleaned_data['attachment3']
+        if attach3:
+            self.create_attach(write, 3, attach3)
 
         return redirect(reverse('WGB:top'))
+
+    def create_attach(self, write, seq, attachment):
+        attach = models.ThreadWriteAttachment()
+        attach.thread_write = write
+        attach.sequence = seq
+        attach.attachment = attachment
+        attach.save()
 
 
 execute_create_thread = ExecuteCreateThreadView.as_view()
@@ -189,7 +206,7 @@ class ThreadWriteView(View, MemberChecker, MessageWriter):
 
         write = form.save()
         # 文字装飾
-        write.sentence = self.decorate(write.sentence)
+        write.sentence = self.decorate(write.sentence, write.number)
         write.save()
 
         # 添付ファイルの保存
@@ -364,32 +381,38 @@ class ShowMessageView(View, MemberChecker):
 show_message = ShowMessageView.as_view()
 
 
-class AjaxGetThreadWrite(View):
+class AjaxGetThreadWrite(View, MessageWriter):
     def get(self, request):
         thread_no = request.GET['thread_no']
         number = request.GET['number']
         write = models.ThreadWrite.objects.get(thread=thread_no, number=number)
 
-        # 参考： https://syncer.jp/jquery-modal-window
-        html = "<div id=\"modal-content\">" \
-               "<div class =\"card\">" \
+        html = "<div class =\"card\">" \
                "<div class=\"card-body\">" \
                "<div class=\"card-title\" style=\"font-size:80%;\">" \
-               "                <span>{0}.{1}</span>"\
-               "                <span style=\"font-size:80%; position:relative; left:20px;\">{2}</span>"\
+               "    <img src=\"{0}\" style=\"width:80px; height:80px; border:solid 1px #ffffff; border-radius: 10px;\">" \
+               "                <span>{1}.{2}</span>"\
+               "                <span style=\"font-size:80%; position:relative; left:20px;\">{3}</span>"\
                "</div>" \
-               "<div class=\"card-text py-2\" style=\"padding:10px;\">{3}</div>" \
-               "</div></div></div>" \
-               .format(write.number,
+               .format(write.member.member.icon.url,
+                       write.number,
                        write.member.member.display_name(),
                        "{0}年{1}月{2}日{3}:{4}".format(write.write_datetime.year,
                                                     write.write_datetime.month,
                                                     write.write_datetime.day,
                                                     write.write_datetime.hour,
                                                     write.write_datetime.minute),
-                       write.sentence)  # 改行とURL変換を自前でやる・・・
+                       )
+        attachments = write.threadwriteattachment_set.all()
+        for attach in attachments:
+            html += "<div class=\"card-text py-2\" style=\"padding:10px;\"><img src=\"{0}\" /></div>".format(attach.attachment.url)
 
-        data_dic = {'data': html}
+        sentence = write.sentence.replace('\n', '<br />')
+        sentence = CharacterDecoration().decorate_url(sentence)
+        html += "<div class=\"card-text py-2\" style=\"padding:10px;\">{0}</div>" \
+                "</div></div>".format(sentence)
+
+        data_dic = {'data': html, 'title': str(write.number) + '.' + write.member.member.display_name()}
         data = json.dumps(data_dic)
 
         return HttpResponse(data)

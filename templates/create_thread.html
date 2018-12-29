@@ -1,7 +1,14 @@
 {% extends "base.html" %}
+{% block script %}
+{% load static %}
+<script src="{% static 'js/wgb.js' %}"></script>
+<script src="{% static 'jquery/jquery.selection.js' %}"></script>
+<script src="{% static 'colorpicker/spectrum.js' %}"></script>
+<link rel="stylesheet" href="{% static 'colorpicker/spectrum.css' %}" />
+{% endblock %}
 {% block content %}
 <div>
-    <form action="{% url 'WGB:exe_create_thread' %}" method="post">
+    <form action="{% url 'WGB:exe_create_thread' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="col-md-8 offset-md-2">
             <div class="card">
@@ -17,7 +24,19 @@
                     <div class="card-text py-2">{{form.password2.label}}</div>
                     <div class="py-2">{{form.password2}}{{form.password2.error}}</div>
                     <div class="card-text py-2">{{form.first_write.label}}</div>
+                    <div>  {# 文字装飾ボタン #}
+                        <button type="button" onclick="add_decorate_tag('%b, 'first_write')" title="大きい文字"><span style="font-size:large;" >あ</span></button>
+                        <button type="button" onclick="add_decorate_tag('%s', 'first_write')" title="小さい文字"><span style="font-size:x-small;">あ</span></button>
+                        <button type="button" onclick="add_decorate_tag('%bl', 'first_write')" title="太い文字"><span style="font-weight:bold;">あ</span></button>
+                        <button type="button" onclick="add_decorate_tag('%st', 'first_write')" title="取り消し線"><span style="text-decoration: line-through;">あ</span></button>
+                        <button type="button" onclick="add_decorate_tag('%c', 'first_write')" title="文字色（右のボタンで色を選択）"><span id="id_color" style="color:red;">あ</span></button>
+                        <input type='text' id="colorpicker" value="red"/>
+                    </div>
                     <div class="py-2">{{form.first_write}}{{form.first_write.error}}</div>
+                    {# 添付ファイル #}
+                    <div class="py-2">{{form.attachment1.label}}{{form.attachment1}}{{form.attachment1.errors}}</div>
+                    <div class="py-2">{{form.attachment2.label}}{{form.attachment2}}{{form.attachment2.errors}}</div>
+                    <div class="py-2">{{form.attachment3.label}}{{form.attachment3}}{{form.attachment3.errors}}</div>
                     <button type="submit" class="btn btn-success btn-lg btn-block">作成する</button>
                     <a href="{% url 'WGB:top' %}">キャンセル</a>
                 </div>
@@ -25,4 +44,5 @@
         </div>
     </form>
 </div>
+<script src="{% static 'js/wgb_spectrum.js'%}"></script>
 {% endblock %}

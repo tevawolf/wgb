@@ -1,1 +1,1 @@
-web: gunicorn wgb.wsgi --log-file -
+web: gunicorn warewolf-game-bbs.wsgi --log-file -

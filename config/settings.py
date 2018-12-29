@@ -136,7 +136,7 @@ LOGIN_REDIRECT_URL = 'wgb/'
 AUTH_USER_MODEL = 'WGB.UserAccount'
 
 try:
-    from .local_settings import *
+    from mysite.local_settings import *
 except ImportError:
     pass
 

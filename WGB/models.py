@@ -14,7 +14,7 @@ class UserAccount(AbstractUser):
     class Meta:
         verbose_name = '利用者アカウント'
         verbose_name_plural = '0.利用者アカウント'
-        db_table = 'user_account'
+        db_table = 'wgb_user_account'
 
     nickname = models.CharField(verbose_name='ニックネーム', max_length=100, null=False, blank=True)
     icon = models.ImageField(verbose_name='アイコン画像パス', upload_to=get_upload_to, null=True, blank=True,

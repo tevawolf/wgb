@@ -21,7 +21,6 @@
         <a class="navbar-brand" href="{% url 'WGB:top' %}">WorewolfGameBBS</a>
         <span>ようこそ&nbsp;
         {% if user.is_authenticated %}
-            <img src="{{ user.icon.url }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;">
             {{user.display_name}}
         {% else %}
             ゲスト

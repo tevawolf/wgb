@@ -71,19 +71,19 @@ function filtering_second(member_id) {
     if (length == 1) {
         var visible = $("#filter_second" + member_id).val();
         if (visible == "true") {
-                $("[class='card member" + member_id + "']").css('display', 'block');
+                $("[class='card member" + member_id + "']").fadeIn('fast');
         } else {
-                $("[class='card member" + member_id + "']").css('display', 'none');
+                $("[class='card member" + member_id + "']").fadeOut('fast');
         }
     } else {
-        $('.filter_second_member').each(function() {
+//        $('.filter_second_member').each(function() {
             var visible = $(this).val();
             if (visible == "true") {
                 $("[class='card member" + member_id + "']").fadeIn('fast');
             } else {
                 $("[class='card member" + member_id + "']").fadeOut('fast');
             }
-        });
+//        });
     }
 }
 

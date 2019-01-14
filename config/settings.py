@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary',
+    'cloudinary_storage',
     'WGB.apps.WgbConfig',
 ]
 
@@ -122,6 +124,13 @@ STATIC_ROOT = 'var/www/{}/static'.format(PROJECT_NAME)
 
 MEDIA_URL = '/upload/'
 MEDIA_ROOT = 'var/www/{}/upload'.format(PROJECT_NAME)
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'ha2hgamwv',
+    'API_KEY': '248477968872181',
+    'API_SECRET': 'JRKmWJTi4o5KyeKdIU0HHL3dvKc'
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 LOGIN_URL = 'wgb/'
 LOGIN_REDIRECT_URL = 'wgb/'

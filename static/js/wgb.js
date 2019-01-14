@@ -77,7 +77,8 @@ function filtering_second(member_id) {
         }
     } else {
 //        $('.filter_second_member').each(function() {
-            var visible = $(this).val();
+//            var visible = $(this).val();
+            var visible = $("#filter_second" + member_id).val();
             if (visible == "true") {
                 $("[class='card member" + member_id + "']").fadeIn('fast');
             } else {

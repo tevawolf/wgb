@@ -29,10 +29,10 @@ class MemberChecker:
 
 
 class MessageWriter:
-    def decorate(self, message):
+    def decorate(self, message, number=0):
         escape_sentence = html.escape(message)
         cd = CharacterDecoration()
-        return cd.decorate(escape_sentence)
+        return cd.decorate(escape_sentence, number)
 
 
 class TopPageView(list.ListView):

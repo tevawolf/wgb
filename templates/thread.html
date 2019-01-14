@@ -102,18 +102,18 @@
     <div class="col-md-4">
         <div class="card  bg-primary text-light">
             <div class="card-body">
-                <div class="card-title">参加メンバー（クリックで表示／非表示切り替え）</div>
+                <div class="card-title">参加メンバー（枠をクリックで表示／非表示切り替え、名前のリンククリックでメッセージ送信画面）</div>
             </div>
         </div>
         {% for member in thread.threadmember_set.all %}
         <div class="card  bg-primary text-light" id="filter_second_div{{member.member.id}}" onclick="filtering_second({{member.member.id}});">
             <div class="card-body">
                 {# 自分が参加している場合だけリンク表示→メッセージ使用可能 #}
+                <img src="{{ member.member.icon.url }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;">
                 {% if user.is_authenticated and thread.open_level == 1 and thread.threadmember_set|find_member_self:user and not member.member == user %}
-                <a href="{% url 'WGB:show_sender_list' thread.thread_no member.id %}">{{member.member.display_name}}さん</a>
+                <a href="{% url 'WGB:show_sender_list' thread.thread_no member.id %}" class="back-blue">{{member.member.display_name}}さん</a>
                 {% else %}
                 <span style="user-select:none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;">
-                    <img src="{{ member.member.icon.url }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;">
                     {{member.member.display_name}}さん
                 </span>
                 {% endif %}

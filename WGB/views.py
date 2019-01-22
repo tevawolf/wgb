@@ -101,7 +101,6 @@ class ExecuteCreateUserView(View):
         # パスワードは改めてUserオブジェクトにセットしてセーブしないと暗号化されない
         # (変な仕様・・・)
         user.set_password(form.cleaned_data['password'])
-        user.icon = form.cleaned_data['icon']
         if not user.icon:
             user.icon = 'upload/icon/wolf_free'
         user.save()

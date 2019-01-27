@@ -25,6 +25,7 @@
                         {{thread.threadmember_set|find_create_user}}さん
                     </div>
                     <div class="card-text"><a href="{% url 'WGB:top' %}" class="back-blue">掲示板一覧に戻る</a></div>
+                    <div class="card-text"><a href="#commentjump" class="back-blue">発言欄にジャンプ</a></div>
                 </div>
             </div>
             {% for write in thread.threadwrite_set.all %}
@@ -50,6 +51,7 @@
             </div>
             {% endfor %}
         </div>
+        <div id="commentjump">
         {% if user.is_authenticated %}
             {% if thread.open_level == 1 and not thread.threadmember_set|find_member_self:user %}
             {# 閲覧のみ掲示板で、ログインしており、参加していない場合、参加フォーム  #}
@@ -98,6 +100,7 @@
             </div>
             {% endif %}
         {% endif %}
+        </div>
     </div>
     <div class="col-md-4">
         <div class="card  bg-primary text-light">

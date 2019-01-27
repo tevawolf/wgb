@@ -85,7 +85,8 @@ class ThreadWrite(models.Model):
     number = models.IntegerField(verbose_name='書き込み番号')
     member = models.ForeignKey(ThreadMember, verbose_name='参加メンバー', on_delete=models.PROTECT)
     sentence = models.TextField(verbose_name='書き込み', null=False, blank=False, max_length=5000)
-    write_datetime = models.DateTimeField(verbose_name='書き込み日時', null=False, blank=False, default=timezone.now())
+    # write_datetime = models.DateTimeField(verbose_name='書き込み日時', null=False, blank=False, default=timezone.now())
+    write_datetime = models.DateTimeField(verbose_name='書き込み日時', null=False, blank=False, auto_now=True)
 
     def next_number(self):
         return self.number + 1

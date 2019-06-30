@@ -25,9 +25,9 @@
             <div class="col-6 col-md-4 border-bottom border-right"><a href="{% url 'WGB:show_thread' thread.thread_no %}">{{thread.thread_title}}</a></div>
             {# 非公開でも、メンバーならリンク表示 #}
             {% elif thread.open_level == 0 and thread.threadmember_set|find_member_self:user %}
-            <div class="col-4 col-md-2 border-bottom border-right"><a href="{% url 'WGB:show_thread' thread.thread_no %}">{{thread.thread_title}}</a></div>
+            <div class="col-4 col-md-4 border-bottom border-right"><a href="{% url 'WGB:show_thread' thread.thread_no %}">{{thread.thread_title}}</a></div>
             {% else %}
-            <div class="col-4 col-md-2 border-bottom border-right">{{thread.thread_title}}</div>
+            <div class="col-4 col-md-4 border-bottom border-right">{{thread.thread_title}}</div>
             {% endif %}
             <div class="col-4 col-md-2 border-bottom border-right" title="{{open_level_discription.0}}">{{thread.display_open_level|safe}}</div>
             <div class="col-4 col-md-2 border-bottom border-right"><img src="{{ thread.display_last_update_user_icon }}" style="width:20px; height:20px; border:solid 1px #ffffff; border-radius: 3px;">{{thread.display_last_update_user}}</div>

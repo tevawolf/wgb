@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>WerewolfGameBBS</title>
+    <title>WerewolfGameBBS 人狼ゲーム掲示板 アルファルファ(超α)版</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/wgb.css' %}" />
     <link rel="stylesheet" href="{% static 'jqueryui/css/jquery-ui.min.css' %}" />
@@ -15,14 +15,16 @@
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     {% block script %}{% endblock %}
 </head>
-<body class="bg-secondary" onload="{% block onload %}{% endblock %}">
+<body class="bg-light" style="padding-top: 50px;" onload="{% block onload %}{% endblock %}">
     <!-- ナビバー -->
-    <nav class="navbar navbar-expand-md navbar-light bg-warning">
-        <a class="navbar-brand" href="{% url 'WGB:top' %}">WerewolfGameBBS</a>
+    <nav class="navbar fixed-top navbar-expand-md navbar-light bg-warning">
+        <div class="collapse navbar-collapse" id="bavbarNav">
+            <a class="navbar-brand" href="{% url 'WGB:top' %}">WGB 人狼掲示板 <small>アルファルファ(超α)版</small></a>
+        </div>
         <span>ようこそ&nbsp;
         {% if user.is_authenticated %}
             <img src="{{ user.icon.url }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;">
-            {{user.display_name}}
+            <a href="{% url 'WGB:show_user' %}">{{user.display_name}}</a>
         {% else %}
             ゲスト
         {% endif %}
@@ -37,11 +39,14 @@
               <li class="nav-item">
                 <a class="nav-item nav-link" href="{% url 'WGB:logout' %}">ログアウト</a>
               </li>
-              <li class="nav-item">
-                  <a class="nav-item nav-link" href="{% url 'WGB:show_join_thread_list' %}">メッセージを送る</a>
-              </li>
+<!--              <li class="nav-item">-->
+<!--                  <a class="nav-item nav-link" href="{% url 'WGB:show_join_thread_list' %}">メッセージを送る</a>-->
+<!--              </li>-->
               <li class="nav-item">
                   <a class="nav-item nav-link" href="{% url 'WGB:create_thread' %}">掲示板を作成</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-item nav-link" href="{% url 'WGB:show_user' %}">ユーザー情報</a>
               </li>
               {% else %}
               <li class="nav-item">
@@ -56,16 +61,21 @@
     </nav>
 
     <!-- メインコンテント -->
-    <div class="container mt-3">
+    <div class="container">
         {% if messages %}
         {% for message in messages %}
             {% if message.tags %}
                 {% if message.tags == 'error' %}
-        <li class="text-danger">{{ message }}</li>
+        <div class="alert-danger alert-dismissible fade show" role="alert">
                 {% elif message.tags == 'warning' %}
-        <li class="text-warning">{{ message }}</li>
+        <div class="alert-warning alert-dismissible fade show" role="alert">
                 {% else %}
-        <li class="text-info">{{ message }}</li>
+        <div class="alert-info alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
                 {% endif %}
             {% endif %}
         {% endfor %}

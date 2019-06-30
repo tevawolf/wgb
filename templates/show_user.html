@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <form action="{% url 'WGB:exe_update_user' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="col-md-8 offset-md-2">
+            <div class="card bg-primary text-light">
+                <div class="card-body">
+                    <div class="card-title">ユーザー情報（編集）</div>
+                    <div class="card-text"><a href="#" onclick="history.back();" class="back-blue">OK(戻る)</a></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-subtitle"><span class="text-danger">{{ form.non_field_errors }}</span></div>
+                    <div class="card-text py-2">ユーザー名:&nbsp;{{username}}</div>
+                    <div class="card-text py-2">{{form.password.label}}</div>
+                    <div class="py-2">{{form.password}}{{form.password.error}}</div>
+                    <div class="card-text py-2">{{form.password2.label}}</div>
+                    <div class="py-2">{{form.password2}}{{form.password2.error}}</div>
+                    <div class="card-text py-2">{{form.nickname.label}}</div>
+                    <div class="py-2">{{form.nickname}}{{form.nickname.error}}</div>
+                    <div class="card-text py-2">{{form.icon.label}}:&nbsp;<img src="{{ user.icon.url }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;"></div>
+                    <div class="card-text py-2">'※アイコン画像を変更する場合のみ、選択してください。'</div>
+                    <div class="py-2">{{form.icon}}{{form.icon.error}}</div>
+                    <input type="hidden" name="user_id" value="{{user_id}}" />
+                    <button type="submit" class="btn btn-success btn-lg btn-block">ユーザ情報を変更する</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

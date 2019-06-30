@@ -38,8 +38,8 @@ class Threads(models.Model):
     thread_title = models.CharField(verbose_name='掲示板タイトル', max_length=100, null=False, blank=False)
     create_date = models.DateTimeField(verbose_name='作成日時', default=timezone.now())
     OPEN_LEVEL = (
-        (0, '非公開 (参加者のみ閲覧・書き込み可)'),
-        (1, '閲覧のみ (参加者のみ書き込み可)'),
+        (0, '非公開'),
+        (1, '閲覧のみ'),
     )
     open_level = models.SmallIntegerField(verbose_name='公開レベル', choices=OPEN_LEVEL, null=False, blank=False)
     password = models.CharField(verbose_name='利用パスワード', max_length=100, null=False, blank=False)
@@ -55,6 +55,15 @@ class Threads(models.Model):
 
     def display_create_user_icon(self):
         return self.threadmember_set.get(create=True).member.icon.url
+
+    def display_last_update_user(self):
+        return self.threadwrite_set.latest('write_datetime').member.member.display_name()
+
+    def display_last_update_user_icon(self):
+        return self.threadwrite_set.latest('write_datetime').member.member.icon.url
+
+    def display_last_update_datetime(self):
+        return self.threadwrite_set.latest('write_datetime').write_datetime
 
 
 class ThreadMember(models.Model):

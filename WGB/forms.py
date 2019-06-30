@@ -18,7 +18,7 @@ class CreateUserForm(forms.ModelForm):
     """ユーザー登録フォーム"""
     class Meta:
         model = models.UserAccount
-        fields = ('username', 'password', 'nickname', 'email', 'icon',)
+        fields = ('username', 'password', 'nickname', 'icon',)
         widgets = {'password': forms.PasswordInput()}
 
     password2 = forms.CharField(
@@ -35,7 +35,6 @@ class CreateUserForm(forms.ModelForm):
             field.widget.attrs['placeholder'] = field.label
 
         self.fields['nickname'].label = 'ニックネーム(任意)'
-        self.fields['email'].label = 'メールアドレス(任意)'
         self.fields['icon'].label = 'アイコン画像(任意)'
         self.fields['icon'].required = False
 
@@ -44,6 +43,40 @@ class CreateUserForm(forms.ModelForm):
         password = self.cleaned_data['password']
         password2 = self.cleaned_data['password2']
         if password != password2:
+            raise forms.ValidationError("パスワードの入力が確認用と一致しません")
+
+
+class UpdateUserForm(forms.ModelForm):
+    """ユーザー更新フォーム"""
+    class Meta:
+        model = models.UserAccount
+        fields = ('id', 'password', 'nickname', 'icon',)
+        widgets = {'password': forms.PasswordInput()}
+
+    password2 = forms.CharField(
+        label='パスワード確認用入力欄',
+        required=False,
+        strip=False,
+        widget=forms.PasswordInput()
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['placeholder'] = field.label
+
+        self.fields['password'].widget.attrs['placeholder'] = '※パスワードを変更する場合のみ、入力してください。'
+        self.fields['password'].required = False
+        self.fields['nickname'].label = 'ニックネーム'
+        self.fields['icon'].label = 'アイコン画像'
+        self.fields['icon'].required = False
+
+    def clean(self):
+        super(UpdateUserForm, self).clean()
+        password = self.cleaned_data['password']
+        password2 = self.cleaned_data['password2']
+        if password and password2 and password != password2:
             raise forms.ValidationError("パスワードの入力が確認用と一致しません")
 
 
@@ -98,12 +131,12 @@ class ThreadWriteForm(forms.ModelForm):
         fields = ('thread', 'number', 'member', 'sentence', )
         widgets = {'sentence': forms.Textarea(attrs={'rows': 4, 'cols': 40})}
 
-    attachment1 = forms.ImageField(label='画像添付１', required=False,
-                                   validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
-    attachment2 = forms.ImageField(label='画像添付２', required=False,
-                                   validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
-    attachment3 = forms.ImageField(label='画像添付３', required=False,
-                                   validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
+    # attachment1 = forms.ImageField(label='画像添付１', required=False,
+    #                                validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
+    # attachment2 = forms.ImageField(label='画像添付２', required=False,
+    #                                validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
+    # attachment3 = forms.ImageField(label='画像添付３', required=False,
+    #                                validators=[FileExtensionValidator(['jpg', 'jpeg', 'gif', 'png', ])], )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

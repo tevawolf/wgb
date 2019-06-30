@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block script %}
+{% load static %}
+<script src="{% static 'js/wgb.js' %}"></script>
+<script src="{% static 'jquery/jquery.selection.js' %}"></script>
+{% endblock %}
+{% block content %}
+{% load custom_tags %}
+<div class="row">
+    <div class="col-md-8">
+        <div>
+            <div class="mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title" style="font-size:80%;">
+                            <img src="{{ user.icon.url }}" style="width:80px; height:80px; border:solid 1px #ffffff; border-radius: 10px;">
+                            <span>{{user.display_name}}さん</span>
+                        </div>
+                        <div class="card-text py-2" style="padding:10px;">
+                            {{form.cleaned_data.sentence}}
+                            <!--
+                            <div class="py-2">{{form.cleaned_data.attachment1}}</div>
+                            <div class="py-2">{{form.cleaned_data.attachment2}}</div>
+                            <div class="py-2">{{form.cleaned_data.attachment3}}</div>
+                            -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">上記の内容で書き込みますが、よろしいですか？</div>
+                        <form action="{% url 'WGB:write_thread' form.cleaned_data.thread.thread_no %}" method="post">
+<!--                        <form action="{% url 'WGB:write_thread' form.cleaned_data.thread.thread_no %}" method="post" enctype="multipart/form-data">-->
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-lg btn-block">書き込む</button>
+                            <input type="hidden" name="thread" value="{{form.cleaned_data.thread.thread_no}}"/>
+                            <input type="hidden" name="sentence" value="{{form.cleaned_data.sentence}}"/>
+                            <input type="hidden" name="number" value="{{form.cleaned_data.number}}"/>
+                            <input type="hidden" name="member" value="{{form.cleaned_data.member.id}}"/>
+                            <!--
+                            <input type="hidden" name="attachment1" value="{{form.cleaned_data.attachment1}}"/>
+                            <input type="hidden" name="attachment2" value="{{form.cleaned_data.attachment2}}"/>
+                            <input type="hidden" name="attachment3" value="{{form.cleaned_data.attachment3}}"/>
+                            -->
+                        </form>
+                        <div class="card-text">
+                            <button type="button" onclick="history.back();"class="btn btn-primary btn-lg btn-block">キャンセル</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

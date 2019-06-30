@@ -42,6 +42,13 @@ class TopPageView(list.ListView):
     paginate_by = 50
     ordering = ['-thread_no']
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)  # はじめに継承元のメソッドを呼び出す
+        context["open_level_discription"] = {
+            0: '参加者のみ閲覧・書き込み可',
+            1: '(参加者のみ書き込み可',
+        }
+        return context
 
 top_page = TopPageView.as_view()
 
@@ -110,6 +117,55 @@ class ExecuteCreateUserView(View):
 execute_create_user = ExecuteCreateUserView.as_view()
 
 
+class ShowUserView(View):
+    """ユーザー情報ページ表示"""
+    def get(self, request, *args, **kwargs):
+        # 認証
+        if not request.user.is_authenticated:
+            messages.add_message(request, messages.WARNING, '不正な操作です。')
+            return redirect(reverse('WGB:top'))
+
+        user = models.UserAccount.objects.get(id=request.user.id)
+
+        form = forms.UpdateUserForm({
+            'password': '******',
+            'password2': '******',
+            'nickname': user.nickname,
+            'icon': user.icon,
+        })
+        return render(request, 'show_user.html', {'form': form, 'user_id': user.id, 'username': user.username})
+
+
+show_user = ShowUserView.as_view()
+
+
+class ExecuteUpdateUserView(View):
+    """ユーザー情報更新実行"""
+    def post(self, request, *args, **kwargs):
+        form = forms.UpdateUserForm(request.POST, request.FILES)
+        if not form.is_valid():
+            return render(request, 'show_user.html', {'form': form})
+
+        user_id = request.POST['user_id']
+        user = models.UserAccount.objects.get(id=user_id)
+
+        print(user.id)
+        print(user.username)
+        print(user.nickname)
+
+        password = form.cleaned_data['password']
+        password2 = form.cleaned_data['password2']
+        if password and password2:
+            user.set_password(password)
+
+        user.save()
+
+        return redirect(reverse('WGB:top'))
+
+
+execute_update_user = ExecuteUpdateUserView.as_view()
+
+
 class CreateThreadView(edit.FormView):
     """掲示板作成画面表示"""
     form_class = forms.CreateThreadForm
@@ -122,7 +178,8 @@ create_thread = CreateThreadView.as_view()
 class ExecuteCreateThreadView(View, MessageWriter):
     """掲示板作成実行"""
     def post(self, request, *args, **kwargs):
-        form = forms.CreateThreadForm(request.POST, request.FILES)
+        form = forms.CreateThreadForm(request.POST)
+        # form = forms.CreateThreadForm(request.POST, request.FILES)
         if not form.is_valid():
             return render(request, 'create_thread.html', {'form': form})
 
@@ -147,15 +204,15 @@ class ExecuteCreateThreadView(View, MessageWriter):
         write.sentence = self.decorate(form.cleaned_data['first_write'])
         write.save()
         # 添付ファイルの保存
-        attach1 = form.cleaned_data['attachment1']
-        if attach1:
-            self.create_attach(write, 1, attach1)
-        attach2 = form.cleaned_data['attachment2']
-        if attach2:
-            self.create_attach(write, 2, attach2)
-        attach3 = form.cleaned_data['attachment3']
-        if attach3:
-            self.create_attach(write, 3, attach3)
+        # attach1 = form.cleaned_data['attachment1']
+        # if attach1:
+        #     self.create_attach(write, 1, attach1)
+        # attach2 = form.cleaned_data['attachment2']
+        # if attach2:
+        #     self.create_attach(write, 2, attach2)
+        # attach3 = form.cleaned_data['attachment3']
+        # if attach3:
+        #     self.create_attach(write, 3, attach3)
 
         return redirect(reverse('WGB:top'))
 
@@ -189,6 +246,27 @@ class ShowThreadView(View, MemberChecker):
 show_thread = ShowThreadView.as_view()
 
 
+class PreviewThreadWriteView(View, MemberChecker):
+    """掲示板書き込みプレビュー"""
+    def post(self, request, thread_no, *args, ** kwargs):
+        # 認証
+        if not self.member_check(request, thread_no):
+            return redirect(reverse('WGB:top'))
+
+        form = forms.ThreadWriteForm(request.POST)
+        # form = forms.ThreadWriteForm(request.POST, request.FILES)
+        if not form.is_valid():
+            return render(request, 'thread.html',
+                          {
+                              'form': form,
+                              'thread': models.Threads.objects.get(thread_no=thread_no),
+                          })
+        return render(request, 'thread_write_preview.html', {'form': form, })
+
+
+preview_thread_write = PreviewThreadWriteView.as_view()
+
+
 class ThreadWriteView(View, MemberChecker, MessageWriter):
     """掲示板書き込み実行"""
     def post(self, request, thread_no, *args, ** kwargs):
@@ -211,15 +289,15 @@ class ThreadWriteView(View, MemberChecker, MessageWriter):
         write.save()
 
         # 添付ファイルの保存
-        attach1 = form.cleaned_data['attachment1']
-        if attach1:
-            self.create_attach(write, 1, attach1)
-        attach2 = form.cleaned_data['attachment2']
-        if attach2:
-            self.create_attach(write, 2, attach2)
-        attach3 = form.cleaned_data['attachment3']
-        if attach3:
-            self.create_attach(write, 3, attach3)
+        # attach1 = form.cleaned_data['attachment1']
+        # if attach1:
+        #     self.create_attach(write, 1, attach1)
+        # attach2 = form.cleaned_data['attachment2']
+        # if attach2:
+        #     self.create_attach(write, 2, attach2)
+        # attach3 = form.cleaned_data['attachment3']
+        # if attach3:
+        #     self.create_attach(write, 3, attach3)
 
         return redirect(reverse('WGB:show_thread', args=[thread_no]))
 

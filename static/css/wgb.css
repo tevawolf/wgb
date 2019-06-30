@@ -1,4 +1,4 @@
-[class^="card member"] {
+[class^="media member"] {
   opacity:  1;
   transition: 0.5s;
   -webkit-transition: 0.5s;
@@ -6,4 +6,10 @@
 
 a[class="back-blue"] {
     color:orange;
+}
+
+input[type="file"] {
+    width: 300px;
+    height: 30px;
+    font-size:12px;
 }

@@ -16,7 +16,7 @@
 <div class="row">
     <div class="col-md-8">
         <div>
-            <div class="card bg-primary text-light">
+            <div class="card bg-info text-light">
                 <div class="card-body">
                     <div class="card-title">掲示板No.{{thread.thread_no}}.&nbsp;{{thread.thread_title}}</div>
                     <div class="card-subtitle" style="display:block; text-align:right;">
@@ -28,11 +28,20 @@
                     <div class="card-text"><a href="#commentjump" class="back-blue">発言欄にジャンプ</a></div>
                 </div>
             </div>
+            <nav aria-label="ページネーション">
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" href="#">前</a></li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">次</a></li>
+                </ul>
+            </nav>
             {% for write in thread.threadwrite_set.all %}
             <div class="card member{{write.member.member.id}}">
                 <div class="card-body">
                     <div class="card-title" style="font-size:80%;">
-                        <img src="{{ write.member.member.icon.url }}" style="width:80px; height:80px; border:solid 1px #ffffff; border-radius: 10px;">
+                        <img src="{{ write.member.member.icon.url }}" style="width:40px; height:40px; border:solid 1px #ffffff; border-radius: 10px;">
                         <span>{{write.number}}.&nbsp;{{write.member.member.display_name}}さん</span>
                         <span style="font-size:80%; position:relative; left:20px;">{{write.write_datetime}}</span>
                         {% if user.is_authenticated and write.member.member == user %}
@@ -50,6 +59,15 @@
                 </div>
             </div>
             {% endfor %}
+            <nav aria-label="ページネーション">
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" href="#">前</a></li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">次</a></li>
+                </ul>
+            </nav>
         </div>
         <div id="commentjump">
         {% if user.is_authenticated %}
@@ -82,13 +100,14 @@
                             <button type="button" onclick="add_decorate_tag('%c', 'sentence')" title="文字色（右のボタンで色を選択）"><span id="id_color" style="color:red;">あ</span></button>
                             <input type='text' id="colorpicker" value="red"/>
                         </div>
-                        <form action="{% url 'WGB:write_thread' thread.thread_no %}" method="post" enctype="multipart/form-data">
+                        <form action="{% url 'WGB:preview_thread_write' thread.thread_no %}" method="post">
+<!--                        <form action="{% url 'WGB:write_thread' thread.thread_no %}" method="post" enctype="multipart/form-data">-->
                             {% csrf_token %}
                             <div class="py-2">{{form.sentence}}{{form.sentence.errors}}</div>
                             {# 添付ファイル #}
-                            <div class="py-2">{{form.attachment1.label}}{{form.attachment1}}{{form.attachment1.errors}}</div>
-                            <div class="py-2">{{form.attachment2.label}}{{form.attachment2}}{{form.attachment2.errors}}</div>
-                            <div class="py-2">{{form.attachment3.label}}{{form.attachment3}}{{form.attachment3.errors}}</div>
+<!--                            <div class="py-2">{{form.attachment1.label}}{{form.attachment1}}{{form.attachment1.errors}}</div>-->
+<!--                            <div class="py-2">{{form.attachment2.label}}{{form.attachment2}}{{form.attachment2.errors}}</div>-->
+<!--                            <div class="py-2">{{form.attachment3.label}}{{form.attachment3}}{{form.attachment3.errors}}</div>-->
                             <button type="submit" class="btn btn-success btn-lg btn-block">書き込む</button>
                             <input type="hidden" name="thread" value="{{thread.thread_no}}"/>
                             <input type="hidden" name="number" value="{{thread.threadwrite_set.latest.next_number}}"/>
@@ -105,7 +124,8 @@
     <div class="col-md-4">
         <div class="card  bg-primary text-light">
             <div class="card-body">
-                <div class="card-title">参加メンバー（枠をクリックで表示／非表示切り替え、名前のリンククリックでメッセージ送信画面）</div>
+                <div class="card-title">参加メンバー<br>（枠をクリックで表示／非表示切り替え）</div>
+<!--                <div class="card-title">参加メンバー（枠をクリックで表示／非表示切り替え、名前のリンククリックでメッセージ送信画面）</div>-->
             </div>
         </div>
         {% for member in thread.threadmember_set.all %}

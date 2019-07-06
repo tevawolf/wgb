@@ -5,19 +5,19 @@
             <h1 class="display-3">WGB</h1>
             <p class="lead">人狼掲示板 <span style="font-size:10px;">アルファルファ(超α)版</span>　トップページ</p>
         </div>
-        <div class="row">
-            <div class="col-2 col-md-1 border-bottom border-right bg-info">No</div>
-            <div class="col-6 col-md-4 border-bottom border-right bg-info">タイトル</div>
-            <div class="col-4 col-md-2 border-bottom border-right bg-info">公開レベル</div>
-            <div class="col-4 col-md-2 border-bottom border-right bg-info">最終更新者</div>
-            <div class="col-4 col-md-2 border-bottom border-right bg-info">最終更新日時</div>
-            <div class="col-4 col-md-1 border-bottom border-right bg-info">参加</div>
+        <div class="row text-white bg-info">
+            <div class="col-2 col-md-1 border-bottom border-right">No</div>
+            <div class="col-6 col-md-4 border-bottom border-right">タイトル</div>
+            <div class="col-4 col-md-2 border-bottom border-right">公開レベル</div>
+            <div class="col-4 col-md-2 border-bottom border-right">最終更新者</div>
+            <div class="col-4 col-md-2 border-bottom border-right">最終更新日時</div>
+            <div class="col-4 col-md-1 border-bottom border-right">参加</div>
         </div>
         {% for thread in threads_list %}
             {% if forloop.counter0|divisibleby:"2" %}
         <div class="row bg-write">
             {% else %}
-        <div class="row bg-light">
+        <div class="row" style="background-color: rgba(0, 0, 0, 0.05);">
             {% endif %}
             <div class="col-2 col-md-1 border-bottom border-right">{{thread.thread_no}}</div>
             {# 閲覧レベルが非公開以外ならリンク表示 #}

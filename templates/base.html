@@ -21,14 +21,15 @@
         <div class="collapse navbar-collapse" id="bavbarNav">
             <a class="navbar-brand" href="{% url 'WGB:top' %}">WGB 人狼掲示板 <small>アルファルファ(超α)版</small></a>
         </div>
-        <span>ようこそ&nbsp;
+        <span>
         {% if user.is_authenticated %}
             <img src="{{ user.icon.url }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;">
             <a href="{% url 'WGB:show_user' %}">{{user.display_name}}</a>
         {% else %}
             ゲスト
         {% endif %}
-        さん</span>
+            さん
+        </span>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -56,6 +57,9 @@
                   <a class="nav-item nav-link" href="{% url 'WGB:create_user' %}">ユーザー登録</a>
               </li>
               {% endif %}
+              <li class="nav-item">
+                  <a class="nav-item nav-link" href="{% url 'WGB:top' %}">トップページ</a>
+              </li>
             </ul>
         </div>
     </nav>

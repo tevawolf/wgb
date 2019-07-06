@@ -133,13 +133,13 @@
             <div class="card-body">
                 {# 自分が参加している場合だけリンク表示→メッセージ使用可能 #}
                 <img src="{{ member.member.icon.url }}" style="width:30px; height:30px; border:solid 1px #ffffff; border-radius: 3px;">
-                {% if user.is_authenticated and thread.open_level == 1 and thread.threadmember_set|find_member_self:user and not member.member == user %}
-                <a href="{% url 'WGB:show_sender_list' thread.thread_no member.id %}" class="back-blue">{{member.member.display_name}}さん</a>
-                {% else %}
+                {# if user.is_authenticated and thread.open_level == 1 and thread.threadmember_set|find_member_self:user and not member.member == user #}
+<!--                <a href="{# url 'WGB:show_sender_list' thread.thread_no member.id #}" class="back-blue">{{member.member.display_name}}さん</a>-->
+                {# else #}
                 <span style="user-select:none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;">
                     {{member.member.display_name}}さん
                 </span>
-                {% endif %}
+                {# endif #}
                 <!--<input type="checkbox" id="filter{{member.member.id}}" class="filter_member" value="{{member.member.id}}"-->
                        <!--onclick="filtering();" checked/>&nbsp;<label for="filter{{member.member.id}}">表示</label>-->
                 <input type="hidden" id="filter_second{{member.member.id}}" class="filter_second_member" value="true">

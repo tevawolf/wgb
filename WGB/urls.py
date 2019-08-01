@@ -13,6 +13,7 @@ urlpatterns = [
     path('show_user', views.show_user, name='show_user'),
     path('exe_update_user', views.execute_update_user, name='exe_update_user'),
     path('create_thread', views.create_thread, name='create_thread'),
+    path('preview_create_thread', views.preview_create_thread, name='preview_create_thread'),
     path('exe_create_thread', views.execute_create_thread, name='exe_create_thread'),
     path('thread<int:thread_no>/', views.show_thread, name='show_thread'),
     path('preview_thread<int:thread_no>_write', views.preview_thread_write, name='preview_thread_write'),

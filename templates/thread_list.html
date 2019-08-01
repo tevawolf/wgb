@@ -7,11 +7,11 @@
         </div>
         <div class="row text-white bg-info">
             <div class="col-2 col-md-1 border-bottom border-right">No</div>
-            <div class="col-6 col-md-4 border-bottom border-right">タイトル</div>
-            <div class="col-4 col-md-2 border-bottom border-right">公開レベル</div>
+            <div class="col-6 col-md-3 border-bottom border-right">タイトル</div>
+            <div class="col-4 col-md-2 border-bottom border-right">閲覧レベル</div>
+            <div class="col-4 col-md-2 border-bottom border-right">メンバー参加</div>
             <div class="col-4 col-md-2 border-bottom border-right">最終更新者</div>
             <div class="col-4 col-md-2 border-bottom border-right">最終更新日時</div>
-            <div class="col-4 col-md-1 border-bottom border-right">参加</div>
         </div>
         {% for thread in threads_list %}
             {% if forloop.counter0|divisibleby:"2" %}
@@ -19,36 +19,36 @@
             {% else %}
         <div class="row" style="background-color: rgba(0, 0, 0, 0.05);">
             {% endif %}
-            <div class="col-2 col-md-1 border-bottom border-right">{{thread.thread_no}}</div>
+            <div class="col-2 col-md-1 border-bottom border-right" style="display: table-cell; vertical-align: middle;">{{thread.thread_no}}</div>
             {# 閲覧レベルが非公開以外ならリンク表示 #}
             {% if thread.open_level != 0 %}
-            <div class="col-6 col-md-4 border-bottom border-right"><a href="{% url 'WGB:show_thread' thread.thread_no %}">{{thread.thread_title}}</a></div>
+            <div class="col-6 col-md-3 border-bottom border-right"><a href="{% url 'WGB:show_thread' thread.thread_no %}">{{thread.thread_title}}</a></div>
             {# 非公開でも、メンバーならリンク表示 #}
             {% elif thread.open_level == 0 and thread.threadmember_set|find_member_self:user %}
-            <div class="col-4 col-md-4 border-bottom border-right"><a href="{% url 'WGB:show_thread' thread.thread_no %}">{{thread.thread_title}}</a></div>
+            <div class="col-6 col-md-3 border-bottom border-right"><a href="{% url 'WGB:show_thread' thread.thread_no %}">{{thread.thread_title}}</a></div>
             {% else %}
-            <div class="col-4 col-md-4 border-bottom border-right">{{thread.thread_title}}</div>
+            <div class="col-6 col-md-3 border-bottom border-right">{{thread.thread_title}}</div>
             {% endif %}
             <div class="col-4 col-md-2 border-bottom border-right" title="{{open_level_discription.0}}">{{thread.display_open_level|safe}}</div>
-            <div class="col-4 col-md-2 border-bottom border-right"><img src="{{ thread.display_last_update_user_icon }}" style="width:20px; height:20px; border:solid 1px #ffffff; border-radius: 3px;">{{thread.display_last_update_user}}</div>
-            <div class="col-4 col-md-2 border-bottom border-right"><small>{{thread.display_last_update_datetime}}</small></div>
-            <div class="col-4 col-md-1 border-bottom border-right">
+            <div class="col-4 col-md-2 border-bottom border-right">
             {# ログインしており、メンバーでなければボタン表示 #}
             {% if user.is_authenticated %}
                 {% if not thread.threadmember_set|find_member_self:user %}
                     <form action="{% url 'WGB:join_member' %}" method="post">
                         {% csrf_token %}
-                        <span>参加パスワード</span><input type="password" name="password"/>
-                        <button type="submit" class="btn btn-info">参加する</button>
+                        <label for="password{{forloop.counter0}}" class="col-form-label-sm">パスワード</label><input id="password{{forloop.counter0}}" type="password" class="form-control form-control-sm" name="password" />
+                        <button type="submit" class="btn-sm btn-info">参加する</button>
                         <input type="hidden" name="thread_no" value="{{thread.thread_no}}">
                     </form>
                 {% else %}
-                    参加済
+                    参加しています
                 {% endif %}
             {% else %}
                 －
             {% endif %}
             </div>
+            <div class="col-4 col-md-2 border-bottom border-right"><img src="{{ thread.display_last_update_user_icon }}" style="width:20px; height:20px; border:solid 1px #ffffff; border-radius: 3px;">{{thread.display_last_update_user}}</div>
+            <div class="col-4 col-md-2 border-bottom border-right"><small>{{thread.display_last_update_datetime}}</small></div>
         </div>
         {% endfor %}
 {% endblock %}

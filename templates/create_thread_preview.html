@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block script %}
+{% load static %}
+<script src="{% static 'js/wgb.js' %}"></script>
+<script src="{% static 'jquery/jquery.selection.js' %}"></script>
+<script src="{% static 'colorpicker/spectrum.js' %}"></script>
+<link rel="stylesheet" href="{% static 'colorpicker/spectrum.css' %}" />
+{% endblock %}
+{% block content %}
+<div>
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">掲示板の作成</div>
+                <div class="card-text py-2">掲示板タイトル: {{thread.thread_title}}</div>
+                <div class="card-text py-2">閲覧レベル: {{thread.display_open_level}}</div>
+                <div class="card-text py-2">パスワード: {{thread.password}}</div>
+                <div class="card-text py-2">最初に書き込む内容: {{thread.first_write | safe | urlize | linebreaksbr}}</div>
+                {# 添付ファイル #}
+<!--                    <div class="py-2">{{form.attachment1.label}}{{form.attachment1}}{{form.attachment1.errors}}</div>-->
+<!--                    <div class="py-2">{{form.attachment2.label}}{{form.attachment2}}{{form.attachment2.errors}}</div>-->
+<!--                    <div class="py-2">{{form.attachment3.label}}{{form.attachment3}}{{form.attachment3.errors}}</div>-->
+            </div>
+        </div>
+        <div class="mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">上記の内容で掲示板を作成します。よろしいですか？</div>
+                    <form action="{% url 'WGB:exe_create_thread' %}" method="post">
+<!--                        <form action="{% url 'WGB:exe_create_thread' %}" method="post" enctype="multipart/form-data">-->
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-lg btn-block">書き込む</button>
+                        <input type="hidden" name="thread_title" value="{{form.cleaned_data.thread_title}}"/>
+                        <input type="hidden" name="open_level" value="{{form.cleaned_data.open_level}}"/>
+                        <input type="hidden" name="password" value="{{form.cleaned_data.password}}"/>
+                        <input type="hidden" name="password2" value="{{form.cleaned_data.password2}}"/>
+                        <input type="hidden" name="first_write" value="{{form.cleaned_data.first_write}}"/>
+                        <!--
+                        <input type="hidden" name="attachment1" value="{{form.cleaned_data.attachment1}}"/>
+                        <input type="hidden" name="attachment2" value="{{form.cleaned_data.attachment2}}"/>
+                        <input type="hidden" name="attachment3" value="{{form.cleaned_data.attachment3}}"/>
+                        -->
+                    </form>
+                    <div class="card-text">
+                        <button type="button" onclick="history.back();"class="btn btn-primary btn-lg btn-block">キャンセル</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/wgb_spectrum.js'%}"></script>
+{% endblock %}

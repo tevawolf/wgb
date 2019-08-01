@@ -8,7 +8,8 @@
 {% endblock %}
 {% block content %}
 <div>
-    <form action="{% url 'WGB:exe_create_thread' %}" method="post">
+<!--    <form action="{% url 'WGB:exe_create_thread' %}" method="post">-->
+    <form action="{% url 'WGB:preview_create_thread' %}" method="post">
 <!--    <form action="{% url 'WGB:exe_create_thread' %}" method="post" enctype="multipart/form-data">-->
         {% csrf_token %}
         <div class="col-md-8 offset-md-2">
@@ -39,7 +40,9 @@
 <!--                    <div class="py-2">{{form.attachment2.label}}{{form.attachment2}}{{form.attachment2.errors}}</div>-->
 <!--                    <div class="py-2">{{form.attachment3.label}}{{form.attachment3}}{{form.attachment3.errors}}</div>-->
                     <button type="submit" class="btn btn-success btn-lg btn-block">作成する</button>
-                    <a href="{% url 'WGB:top' %}">キャンセル</a>
+                    <div class="card-text">
+                        <button type="button" onclick="history.back();"class="btn btn-primary btn-lg btn-block">キャンセル</button>
+                    </div>
                 </div>
             </div>
         </div>

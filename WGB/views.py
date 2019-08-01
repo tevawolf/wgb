@@ -133,7 +133,11 @@ class ShowUserView(View):
             'nickname': user.nickname,
             'icon': user.icon,
         })
-        return render(request, 'show_user.html', {'form': form, 'user_id': user.id, 'username': user.username})
+        if user.nickname != '':
+            nickname = user.nickname
+        else:
+            nickname = '(設定なし)'
+        return render(request, 'show_user.html', {'form': form, 'user_id': user.id, 'username': user.username, "nickname": nickname})
 
 
 show_user = ShowUserView.as_view()
@@ -173,6 +177,26 @@ class CreateThreadView(edit.FormView):
 
 
 create_thread = CreateThreadView.as_view()
+
+
+class PreviewCreateThreadView(View, MessageWriter):
+    """掲示板作成プレビュー"""
+    def post(self, request, *args, ** kwargs):
+        form = forms.CreateThreadForm(request.POST)
+        # form = forms.CreateThreadForm(request.POST, request.FILES)
+        if not form.is_valid():
+            return render(request, 'create_thread.html', {'form': form})
+
+        thread = models.Threads()
+        thread.thread_title = form.cleaned_data['thread_title']
+        thread.open_level = form.cleaned_data['open_level']
+        thread.password = '******'
+        # 文字装飾
+        thread.first_write = self.decorate(form.cleaned_data['first_write'])
+        return render(request, 'create_thread_preview.html', {'form': form, 'thread': thread, })
+
+
+preview_create_thread = PreviewCreateThreadView.as_view()
 
 
 class ExecuteCreateThreadView(View, MessageWriter):
@@ -469,7 +493,7 @@ class AjaxGetThreadWrite(View, MessageWriter):
         html = "<div class =\"card\">" \
                "<div class=\"card-body\">" \
                "<div class=\"card-title\" style=\"font-size:80%;\">" \
-               "    <img src=\"{0}\" style=\"width:80px; height:80px; border:solid 1px #ffffff; border-radius: 10px;\">" \
+               "    <img src=\"{0}\" style=\"width:40px; height:40px; border:solid 1px #ffffff; border-radius: 10px;\">" \
                "                <span>{1}.{2}</span>"\
                "                <span style=\"font-size:80%; position:relative; left:20px;\">{3}</span>"\
                "</div>" \

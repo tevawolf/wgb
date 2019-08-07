@@ -17,7 +17,7 @@
                             <span>{{user.display_name}}さん</span>
                         </div>
                         <div class="card-text py-2" style="padding:10px;">
-                            {{form.cleaned_data.sentence}}
+                            {{preview_sentence | safe | urlize | linebreaksbr}}
                             <!--
                             <div class="py-2">{{form.cleaned_data.attachment1}}</div>
                             <div class="py-2">{{form.cleaned_data.attachment2}}</div>

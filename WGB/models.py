@@ -38,8 +38,8 @@ class Threads(models.Model):
     thread_title = models.CharField(verbose_name='掲示板タイトル', max_length=100, null=False, blank=False)
     create_date = models.DateTimeField(verbose_name='作成日時', default=timezone.now())
     OPEN_LEVEL = (
-        (0, 'メンバーのみ閲覧可'),
-        (1, '誰でも閲覧可'),
+        (0, 'メンバーのみ'),
+        (1, '誰でも'),
     )
     open_level = models.SmallIntegerField(verbose_name='閲覧レベル', choices=OPEN_LEVEL, null=False, blank=False)
     password = models.CharField(verbose_name='利用パスワード', max_length=100, null=False, blank=False)

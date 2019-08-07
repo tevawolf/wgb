@@ -97,6 +97,19 @@ class CreateUserView(edit.FormView):
 create_user = CreateUserView.as_view()
 
 
+class PreviewCreateUserView(View):
+    """ユーザー登録プレビュー"""
+    def post(self, request, *args, **kwargs):
+        form = forms.CreateUserForm(request.POST, request.FILES)
+        if not form.is_valid():
+            return render(request, 'create_user_preview.html', {'form': form})
+
+        return redirect(reverse('WGB:top'))
+
+
+preview_create_user = PreviewCreateUserView.as_view()
+
+
 class ExecuteCreateUserView(View):
     """ユーザー登録実行"""
     def post(self, request, *args, **kwargs):
@@ -270,7 +283,7 @@ class ShowThreadView(View, MemberChecker):
 show_thread = ShowThreadView.as_view()
 
 
-class PreviewThreadWriteView(View, MemberChecker):
+class PreviewThreadWriteView(View, MemberChecker, MessageWriter):
     """掲示板書き込みプレビュー"""
     def post(self, request, thread_no, *args, ** kwargs):
         # 認証
@@ -285,7 +298,11 @@ class PreviewThreadWriteView(View, MemberChecker):
                               'form': form,
                               'thread': models.Threads.objects.get(thread_no=thread_no),
                           })
-        return render(request, 'thread_write_preview.html', {'form': form, })
+        # プレビュー用に別途装飾付きの書き込み文を生成
+        return render(request, 'thread_write_preview.html', {
+            'form': form,
+            'preview_sentence': self.decorate(form.cleaned_data['sentence'])
+        })
 
 
 preview_thread_write = PreviewThreadWriteView.as_view()
